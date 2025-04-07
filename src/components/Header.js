@@ -1,12 +1,14 @@
 "use client"
 import '../styles/Header.css';
 import { Link } from "react-router-dom";
-function Header(){
+import logo_web from '../picture/logo-1.webp';
 
-  return(
-  <nav>
-      <div className= "Logo">
-        <img src="https://cdn.animevietsub.one/data/logo/logoz.png" alt="Logo" />
+function Header() {
+
+  return (
+    <nav>
+      <div className="Logo">
+        <img src={logo_web} alt="Logo" className="logo-img" />
       </div>
       <div className="Header">
         <ul>
