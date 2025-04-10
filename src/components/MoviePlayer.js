@@ -12,7 +12,7 @@ const MoviePlayer = () => {
     const [loading, setLoading] = useState(true);
     const [reviews, setReviews] = useState([]);
     const [newComment, setNewComment] = useState("");
-    const [rating, setRating] = useState(5);
+    const [rating, setRating] = useState(10);
     const [isFavorite, setIsFavorite] = useState(false);
     const navigate = useNavigate();
 
@@ -25,7 +25,6 @@ const MoviePlayer = () => {
                     setMovie(data);
                     if (data.episodes.length > 0) {
                         setCurrentEpisode(data.episodes[0]);
-                        // Ghi lại lịch sử xem phim
                         recordHistory(data.title, id);
                     }
                 } else {
@@ -47,7 +46,6 @@ const MoviePlayer = () => {
             }
         };
 
-        // Kiểm tra phim có trong danh sách yêu thích không
         const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
         setIsFavorite(favorites.includes(id));
 
@@ -71,14 +69,13 @@ const MoviePlayer = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setNewComment("");
-            setRating(5);
+            setRating(10);
             const res = await axios.get(`http://localhost:3001/api/reviews/${id}`);
             setReviews(res.data);
             toast.success("Đánh giá thành công!");
         } catch (err) {
             toast.error(
-                "Lỗi khi gửi đánh giá: " +
-                (err.response?.data?.error || "Thử lại sau")
+                "Lỗi khi gửi đánh giá: " + (err.response?.data?.error || "Thử lại sau")
             );
         }
     };
@@ -111,7 +108,7 @@ const MoviePlayer = () => {
         const updatedHistory = [
             newEntry,
             ...history.filter((item) => item.id !== movieId),
-        ].slice(0, 10); // Giới hạn 10 phim gần nhất
+        ].slice(0, 10);
         localStorage.setItem("watchHistory", JSON.stringify(updatedHistory));
     };
 
@@ -162,22 +159,27 @@ const MoviePlayer = () => {
                 </div>
             </div>
             <div className="movie-info">
-                <img src={movie.image_url} alt={movie.title} className="movie-poster" />
-                <div className="movie-details">
-                    <h3>{movie.title}</h3>
-                    <p>{movie.description}</p>
-                    <button onClick={toggleFavorite} className="favorite-btn">
+                <div className="poster-container">
+                    <img src={movie.image_url} alt={movie.title} className="movie-poster" />
+                    <button
+                        onClick={toggleFavorite}
+                        className={`favorite-btn ${isFavorite ? "remove-favorite" : "add-favorite"}`} // Thêm class động
+                    >
                         {isFavorite
                             ? "Xóa khỏi danh sách yêu thích"
                             : "Thêm vào danh sách yêu thích"}
                     </button>
+                </div>
+                <div className="movie-details">
+                    <h3>{movie.title}</h3>
+                    <p>{movie.description}</p>
                 </div>
             </div>
             <div className="review-section">
                 <h3>ĐÁNH GIÁ</h3>
                 <form onSubmit={handleReviewSubmit}>
                     <div className="rating-input">
-                        <label>Điểm đánh giá (1-5): </label>
+                        <label>Điểm đánh giá (1-10): </label>
                         <select
                             value={rating}
                             onChange={(e) => setRating(Number(e.target.value))}
@@ -188,6 +190,11 @@ const MoviePlayer = () => {
                             <option value="3">3</option>
                             <option value="4">4</option>
                             <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
                         </select>
                     </div>
                     <textarea
@@ -207,7 +214,7 @@ const MoviePlayer = () => {
                                 <p>
                                     <strong>{review.user_name}</strong> (
                                     {new Date(review.review_date).toLocaleString()}) -
-                                    <span className="rating"> Điểm: {review.rating}/5</span>
+                                    <span className="rating"> Điểm: {review.rating}/10</span>
                                 </p>
                                 <p>{review.comment}</p>
                             </div>

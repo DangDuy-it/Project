@@ -276,29 +276,41 @@ app.get('/api/movies/:id', (req, res) => {
 
 
 // API: Gửi đánh giá (yêu cầu đăng nhập)
-app.post('/api/reviews', authenticateToken, (req, res) => {
+app.post("/api/reviews", (req, res) => {
     const { movie_id, rating, comment } = req.body;
-    const user_id = req.user.user_id; // Lấy user_id từ token
+    const token = req.headers.authorization?.split(" ")[1];
 
-    if (!movie_id || !rating || !comment) {
-        return res.status(400).json({ error: 'Vui lòng điền đầy đủ thông tin (điểm đánh giá và bình luận)' });
+    if (!token) {
+        return res.status(401).json({ error: "Vui lòng đăng nhập!" });
     }
 
-    if (rating < 1 || rating > 5) {
-        return res.status(400).json({ error: 'Điểm đánh giá phải từ 1 đến 5' });
-    }
+    try {
+        const decoded = jwt.verify(token, "your_secret_key");
+        const user_id = decoded.user_id;
+        const user_name = decoded.user_name;
 
-    db.query(
-        'INSERT INTO reviews (user_id, movie_id, rating, comment) VALUES (?, ?, ?, ?)',
-        [user_id, movie_id, rating, comment],
-        (err, result) => {
-            if (err) {
-                console.log('Lỗi khi gửi đánh giá:', err);
-                return res.status(500).json({ error: err.message });
-            }
-            res.status(201).json({ message: 'Đánh giá thành công!' });
+        if (!movie_id || !rating || !comment) {
+            return res.status(400).json({ error: "Vui lòng điền đầy đủ thông tin!" });
         }
-    );
+
+        // Kiểm tra rating trong khoảng 1-10
+        if (rating < 1 || rating > 10) {
+            return res.status(400).json({ error: "Điểm đánh giá phải từ 1 đến 10!" });
+        }
+
+        db.query(
+            "INSERT INTO reviews (movie_id, user_id, user_name, rating, comment) VALUES (?, ?, ?, ?, ?)",
+            [movie_id, user_id, user_name, rating, comment],
+            (err) => {
+                if (err) {
+                    return res.status(500).json({ error: err.message });
+                }
+                res.status(201).json({ message: "Đánh giá thành công!" });
+            }
+        );
+    } catch (err) {
+        res.status(401).json({ error: "Token không hợp lệ!" });
+    }
 });
 
 // API: Lấy danh sách đánh giá của một phim
