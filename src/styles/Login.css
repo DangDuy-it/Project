@@ -128,3 +128,48 @@ p {
         font-size: 14px;
     }
 }
+
+.success-message {
+    color: green;
+    font-size: 14px;
+    margin: 10px 0;
+    text-align: center;
+}
+.link-style {
+    cursor: pointer;
+    display: block;
+    margin: 10px 0;
+    text-align: right;
+}
+.favorites-section,
+.history-section {
+  margin-top: 20px;
+}
+
+.favorites-section h3,
+.history-section h3 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+.favorites-section ul,
+.history-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.favorites-section li,
+.history-section li {
+  margin: 5px 0;
+}
+
+.favorites-section a,
+.history-section a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.favorites-section a:hover,
+.history-section a:hover {
+  text-decoration: underline;
+}

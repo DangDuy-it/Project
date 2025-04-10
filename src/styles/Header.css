@@ -1,86 +1,127 @@
 nav {
-    width: 100vw;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 200px;
-    background-color: #111;
-    position: relative;
-  }
-  
-  .Logo img {
-    width: 120px;
-    cursor: pointer;
-  }
-  .Header ul{
-    display: flex;
-    gap: 20px;
-    list-style: none;
-  }
-  .Header li{
-    position: relative;
-    padding-right: 80px;
-  }
-  .Header li a{
-    text-decoration: none;
-    color: white;
-    font-weight: bold;
-    transition: 0.3s ease;
-  }
-  
-  .Header li a:hover{
-    color: aquamarine;
-  }
-  
-  
-  
-  .dropdown {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: #444;
-    list-style: none;
-    padding: 10px;
-    margin: 0;
-    border-radius: 5px;
-    z-index: 1000;
-  }
-  
-  .dropdown li {
-    margin: 5px 0;
-  }
-  
-  .dropdown a:hover {
-    text-decoration: underline;
-  }
-  
-  .Search ul {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-  }
-  .Search li {
-    list-style: none;
-  }
-  
-  .Search input {
-    padding: 8px;
-    border: none;
-    border-radius: 20px;
-    outline: none;
-    width: 200px;
-  }
-  
-  .Login {
-    text-decoration: none;
-    color: white;
-    padding: 8px 15px;
-    background-color: red;
-    border-radius: 5px;
-    transition: background 0.3s ease;
-  }
-  
-  .Login:hover {
-    background: aquamarine;
-  }
+  width: 100vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 200px;
+  background-color: #111;
+  position: relative;
+}
+
+.Logo img {
+  width: 120px;
+  cursor: pointer;
+}
+
+.Header ul {
+  display: flex;
+  gap: 80px;
+  list-style: none;
+}
+
+.Header li {
+  position: relative; 
+}
+
+.Header li a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  transition: 0.3s ease;
+}
+
+.Header li a:hover {
+  color: aquamarine;
+}
+
+/* Định dạng dropdown */
+.dropdown .dropdown-menu {
+  display: none; /* Ẩn danh sách con mặc định */
+  position: absolute;
+  top: 100%; /* Đặt danh sách con ngay dưới mục chính */
+  left: 0;
+  background-color: #444;
+  list-style: none;
+  padding: 10px;
+  margin: 0;
+  border-radius: 5px;
+  z-index: 1000;
+  min-width: 150px; /* Chiều rộng tối thiểu của dropdown */
+}
+
+.dropdown:hover .dropdown-menu {
+  display: block; /* Hiện danh sách con khi hover */
+}
+
+.dropdown-menu li {
+  margin: 5px 0;
+}
+
+.dropdown-menu li a {
+  color: white;
+  font-weight: normal;
+  font-size: 14px;
+  transition: 0.3s ease;
+}
+
+.dropdown-menu li a:hover {
+  color: aquamarine;
+  text-decoration: underline;
+}
+
+.Search ul {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  list-style: none;
+}
+
+.Search input {
+  padding: 8px;
+  border: none;
+  border-radius: 20px;
+  outline: none;
+  width: 200px;
+}
+
+.Login {
+  text-decoration: none;
+  color: white;
+  padding: 8px 15px;
+  background-color: red;
+  border-radius: 5px;
+  transition: background 0.3s ease;
+}
+
+.Login:hover {
+  background: aquamarine;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logout-btn {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background-color: #d9363e;
+}
+
+.user-name {
+  color: #007bff;
+  text-decoration: none;
+  margin-right: 10px;
+}
+
+.user-name:hover {
+  text-decoration: underline;
+}

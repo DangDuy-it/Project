@@ -1,5 +1,5 @@
 "use client";
-import onepiece from "../picture/15.jpg";
+
 
 export const DataSlider=[
     {
@@ -8,7 +8,7 @@ export const DataSlider=[
         description: "Hành trình phiêu lưu đầy kỳ thú của Monkey D. Luffy và băng hải tặc Mũ Rơm trong cuộc tìm kiếm kho báu huyền thoại!",
         studio: "Toei Animation",
         genre: "Shounen, Fantasy, Comedy",
-        image: onepiece,
+        image: "/images/15.jpg",
     },
     {
         id: 2,
@@ -16,7 +16,7 @@ export const DataSlider=[
         description: "Hành trình phiêu lưu đầy kỳ thú của Monkey D. Luffy và băng hải tặc Mũ Rơm trong cuộc tìm kiếm kho báu huyền thoại!",
         studio: "Toei Animation",
         genre: "Shounen, Fantasy, Comedy",
-        image: onepiece,
+        image: "/images/15.jpg",
     },
     {
         id: 3,
@@ -24,6 +24,6 @@ export const DataSlider=[
         description: "Hành trình phiêu lưu đầy kỳ thú của Monkey D. Luffy và băng hải tặc Mũ Rơm trong cuộc tìm kiếm kho báu huyền thoại!",
         studio: "Toei Animation",
         genre: "Shounen, Fantasy, Comedy",
-        image: onepiece,
+        image: "/images/15.jpg",
     },
 ];

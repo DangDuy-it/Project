@@ -1,81 +1,221 @@
-import React, { useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { AnimeList } from './Datalist';
-import '../styles/MoviePlayer.css';
+import React, { useEffect, useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import "../styles/MoviePlayer.css";
+import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const MoviePlayer = () => {
     const { id } = useParams();
-    const movie = AnimeList.find((m) => m.id === parseInt(id));
+    const [movie, setMovie] = useState(null);
+    const [currentEpisode, setCurrentEpisode] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [reviews, setReviews] = useState([]);
+    const [newComment, setNewComment] = useState("");
+    const [rating, setRating] = useState(5);
+    const [isFavorite, setIsFavorite] = useState(false);
+    const navigate = useNavigate();
 
-    const [currentEpisode, setCurrentEpisode] = useState(movie?.episodes?.[0] || null);
+    useEffect(() => {
+        const fetchMovie = async () => {
+            try {
+                const res = await fetch(`http://localhost:3001/api/movies/${id}`);
+                const data = await res.json();
+                if (data.episodes && Array.isArray(data.episodes)) {
+                    setMovie(data);
+                    if (data.episodes.length > 0) {
+                        setCurrentEpisode(data.episodes[0]);
+                        // Ghi lại lịch sử xem phim
+                        recordHistory(data.title, id);
+                    }
+                } else {
+                    setMovie({ ...data, episodes: [] });
+                }
+            } catch (err) {
+                console.error("Lỗi:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    // Kiểm tra movie sau khi gọi useState
-    if (!movie) {
-        return <div>Phim không tồn tại!</div>;
-    }
+        const fetchReviews = async () => {
+            try {
+                const res = await axios.get(`http://localhost:3001/api/reviews/${id}`);
+                setReviews(res.data);
+            } catch (err) {
+                console.error("Lỗi lấy đánh giá:", err);
+            }
+        };
 
-    // Dữ liệu giả lập cho bình luận
-    const comments = [
-        { user: "User1", comment: "Phim hay quá!" },
-        { user: "User2", comment: "Tập này cảm động thật sự." },
-    ];
+        // Kiểm tra phim có trong danh sách yêu thích không
+        const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+        setIsFavorite(favorites.includes(id));
 
-    const country = "Trung Quốc";
+        fetchMovie();
+        fetchReviews();
+    }, [id]);
+
+    const handleReviewSubmit = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem("token");
+        if (!token) {
+            toast.error("Vui lòng đăng nhập để gửi đánh giá!");
+            navigate("/login");
+            return;
+        }
+
+        try {
+            await axios.post(
+                "http://localhost:3001/api/reviews",
+                { movie_id: id, rating, comment: newComment },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            setNewComment("");
+            setRating(5);
+            const res = await axios.get(`http://localhost:3001/api/reviews/${id}`);
+            setReviews(res.data);
+            toast.success("Đánh giá thành công!");
+        } catch (err) {
+            toast.error(
+                "Lỗi khi gửi đánh giá: " +
+                (err.response?.data?.error || "Thử lại sau")
+            );
+        }
+    };
+
+    const toggleFavorite = () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            toast.error("Vui lòng đăng nhập để thêm vào danh sách yêu thích!");
+            navigate("/login");
+            return;
+        }
+
+        const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+        if (isFavorite) {
+            const newFavorites = favorites.filter((fav) => fav !== id);
+            localStorage.setItem("favorites", JSON.stringify(newFavorites));
+            setIsFavorite(false);
+            toast.success("Đã xóa khỏi danh sách yêu thích!");
+        } else {
+            favorites.push(id);
+            localStorage.setItem("favorites", JSON.stringify(favorites));
+            setIsFavorite(true);
+            toast.success("Đã thêm vào danh sách yêu thích!");
+        }
+    };
+
+    const recordHistory = (title, movieId) => {
+        const history = JSON.parse(localStorage.getItem("watchHistory") || "[]");
+        const newEntry = { id: movieId, title, timestamp: new Date().toISOString() };
+        const updatedHistory = [
+            newEntry,
+            ...history.filter((item) => item.id !== movieId),
+        ].slice(0, 10); // Giới hạn 10 phim gần nhất
+        localStorage.setItem("watchHistory", JSON.stringify(updatedHistory));
+    };
+
+    if (loading) return <div>Đang tải...</div>;
+    if (!movie) return <div>Không tìm thấy phim!</div>;
 
     return (
         <div className="movie-player-container">
             <div className="breadcrumb">
-                <Link to="/">Trang chủ</Link> / <span>{country}</span> / <span>{movie.title}</span> / <span>{currentEpisode.title}</span>
+                <Link to="/">Trang chủ</Link> / <span>{movie.title}</span> /{" "}
+                <span>{currentEpisode?.title}</span>
             </div>
-
             <div className="video-player">
                 <iframe
+                    key={currentEpisode?.episode_id}
                     width="100%"
                     height="400"
-                    src={currentEpisode.videoUrl}
+                    src={currentEpisode?.video_url}
                     title={movie.title}
                     frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                 ></iframe>
             </div>
-
             <div className="episode-list">
                 <h3>DANH SÁCH TẬP</h3>
                 <div className="episodes">
-                    {movie.episodes.map((ep) => (
-                        <button
-                            key={ep.episode}
-                            className={ep.episode === currentEpisode.episode ? "active" : ""}
-                            onClick={() => setCurrentEpisode(ep)}
-                        >
-                            {ep.episode}
-                        </button>
-                    ))}
+                    {Array.isArray(movie.episodes) && movie.episodes.length > 0 ? (
+                        movie.episodes.map((ep) => (
+                            <button
+                                key={ep.episode_id}
+                                className={
+                                    Number(ep.episode) === Number(currentEpisode?.episode)
+                                        ? "active"
+                                        : ""
+                                }
+                                onClick={() => {
+                                    setCurrentEpisode(ep);
+                                    recordHistory(movie.title, id);
+                                }}
+                            >
+                                Tập {ep.episode}
+                            </button>
+                        ))
+                    ) : (
+                        <p>Chưa có tập phim nào.</p>
+                    )}
                 </div>
             </div>
-
             <div className="movie-info">
-                <img src={movie.image} alt={movie.title} className="movie-poster" />
+                <img src={movie.image_url} alt={movie.title} className="movie-poster" />
                 <div className="movie-details">
-                    <h3>GIA THIÊN</h3>
-                    <p>
-                        Già Thiên kể về Diệp Phàm, một chàng trai ở thế giới hiện tại vô tình bị hút vào chiếc quan tài được kéo bởi chín con rồng, được đưa đến một thế giới cổ đại, một thế giới tiên hiệp rộng lớn, kỳ dị và đầy bí ẩn. Hành trình của Diệp Phàm chông gai, và đầy nguy hiểm rình rập, luôn luôn cận kề cái chết, nhưng với sự kiên trì và nghị lực, Diệp Phàm ngày càng nâng cao thực lực bản thân, bước vào con đường tu tiên gian khổ.
-                    </p>
+                    <h3>{movie.title}</h3>
+                    <p>{movie.description}</p>
+                    <button onClick={toggleFavorite} className="favorite-btn">
+                        {isFavorite
+                            ? "Xóa khỏi danh sách yêu thích"
+                            : "Thêm vào danh sách yêu thích"}
+                    </button>
                 </div>
             </div>
-
-            <div className="comment-section">
-                <h3>BÌNH LUẬN</h3>
-                <div className="comments">
-                    {comments.map((comment, index) => (
-                        <div key={index} className="comment">
-                            <strong>{comment.user}:</strong> {comment.comment}
-                        </div>
-                    ))}
+            <div className="review-section">
+                <h3>ĐÁNH GIÁ</h3>
+                <form onSubmit={handleReviewSubmit}>
+                    <div className="rating-input">
+                        <label>Điểm đánh giá (1-5): </label>
+                        <select
+                            value={rating}
+                            onChange={(e) => setRating(Number(e.target.value))}
+                            required
+                        >
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <textarea
+                        placeholder="Viết đánh giá của bạn..."
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        required
+                    ></textarea>
+                    <button type="submit" className="review-button">
+                        GỬI ĐÁNH GIÁ
+                    </button>
+                </form>
+                <div className="reviews-list">
+                    {reviews.length > 0 ? (
+                        reviews.map((review) => (
+                            <div key={review.review_id} className="review">
+                                <p>
+                                    <strong>{review.user_name}</strong> (
+                                    {new Date(review.review_date).toLocaleString()}) -
+                                    <span className="rating"> Điểm: {review.rating}/5</span>
+                                </p>
+                                <p>{review.comment}</p>
+                            </div>
+                        ))
+                    ) : (
+                        <p>Chưa có đánh giá nào.</p>
+                    )}
                 </div>
-                <textarea placeholder="Viết bình luận của bạn..."></textarea>
-                <button className="comment-button">GỬI</button>
             </div>
         </div>
     );
