@@ -1,0 +1,76 @@
+.movie-edit-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #1f2b30;
+    color: white;
+    border-radius: 8px;
+}
+
+.movie-edit-box {
+    display: flex;
+    gap: 20px;
+}
+
+.movie-poster {
+    width: 160px;
+    height: auto;
+    border-radius: 4px;
+}
+
+.movie-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+label {
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+input,
+textarea {
+    margin-top: 4px;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #2e3b40;
+    color: white;
+}
+
+textarea {
+    resize: vertical;
+}
+
+.movie-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn.save {
+    background-color: #d9534f;
+    color: white;
+}
+
+.btn.cancel {
+    background-color: #5a5a5a;
+    color: white;
+}
+
+.btn.upload {
+    background-color: #343a40;
+    color: white;
+}

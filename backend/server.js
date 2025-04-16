@@ -15,7 +15,7 @@ app.use('/video', express.static('public/video'));
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '1234',
+    password: '12345678',
     database: 'web'
 });
 
@@ -39,9 +39,13 @@ app.get('/users', (req, res) => {
 app.get('/api/movies', (req, res) => {
     const query = `
         SELECT 
-            movie_id as id,
+            movie_id AS id,
             title,
+            description,
             image_url,
+            release_year as year,
+            duration,
+            genre,
             status
         FROM movies
         WHERE status = 'approved'`; // Chỉ lấy phim đã được duyệt
@@ -62,6 +66,9 @@ app.get('/api/movies/:id', (req, res) => {
         title,
         description,
         image_url,
+        release_year as year,
+        duration,
+        genre,
         status
     FROM movies
     WHERE movie_id = ? AND status = 'approved'

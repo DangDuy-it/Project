@@ -6,6 +6,8 @@ import TheLoai from "./pages/TheLoai";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import MoviePlayer from "./components/MoviePlayer";
+import DuyetPhim from "./pages/Admin/DuyetPhim";
+import SuaPhim from "./pages/Admin/SuaPhim";
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
         <Route path="/login" element={<Login/>}></Route> {/* Trang Đăng Nhập */}
         <Route path="register" element={<Register/>}></Route> {/* Trang Đăng Ký */}
         <Route path="/movie/:id" element={<MoviePlayer />} /> {/* Trang phát video */}
+        <Route path="/admin/duyet-phim" element={<DuyetPhim/>}/>
+        <Route path="/admin/sua-phim/:id" element={<SuaPhim/>}/>
       </Routes>
     </Router>
     </div>
