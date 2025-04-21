@@ -17,7 +17,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} /> {/* Trang chủ */}
         <Route path="/dang-anime" element={<DangAnime />} /> {/* Dạng Anime */}
-        <Route path="/the-loai" element={<TheLoai />} /> {/* Dạng Anime */}
+        <Route path="/the-loai/:category_name" element={<TheLoai />} /> {/* Dạng Anime */}
         <Route path="/login" element={<Login/>}></Route> {/* Trang Đăng Nhập */}
         <Route path="register" element={<Register/>}></Route> {/* Trang Đăng Ký */}
         <Route path="/movie/:id" element={<MoviePlayer />} /> {/* Trang phát video */}

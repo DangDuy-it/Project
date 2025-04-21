@@ -105,3 +105,33 @@ app.get('/api/movies/:id', (req, res) => {
 app.listen(port, () => {
     console.log(`Server chạy tại http://localhost:${port}`);
 });
+
+// API: Lấy danh sách thể loại
+app.get('/api/categories', (req, res) => {
+    const query = `
+        SELECT 
+            category_id,
+            category_name
+        FROM categories
+    `;
+    
+    db.query(query, (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(results);
+    });
+});
+
+// API: Lấy danh sách phim theo thể loại
+app.get('/api/movie_categories', (req, res) => {
+    const query = `
+        SELECT 
+            movie_id,
+            category_id
+        FROM movie_categories
+    `;
+    
+    db.query(query, (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(results);
+    });
+});

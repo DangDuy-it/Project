@@ -1,4 +1,4 @@
-.list {
+.admin-list {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -6,7 +6,7 @@
     width: 100%;
 }
 
-.anime-item {
+.admin-anime-item {
     display: flex;
     flex-direction: row;
     background-color: #444;
@@ -18,74 +18,74 @@
     border: 2px solid #aaa;
 }
 
-.anime-image {
+.admin-anime-image {
     width: 120px;
     height: 180px;
     margin-right: 20px;
     flex-shrink: 0;
 }
 
-.anime-image img {
+.admin-anime-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 10px;
 }
 
-.anime-info {
+.admin-anime-info {
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content:left;
+    justify-content: left;
     gap: 8px;
     text-align: left;
 }
 
-.anime-info h3 {
+.admin-anime-info h3 {
     margin: 0;
     font-size: 18px;
 }
 
-.anime-info p {
+.admin-anime-info p {
     margin: 0;
     font-size: 14px;
 }
 
-.anime-info .status {
+.admin-status {
     display: flex;
-    align-items:flex-start;
+    align-items: flex-start;
     font-size: 14px;
     font-weight: bold;
     margin-top: 8px;
 }
 
-.anime-info .status .dot {
+.admin-status .admin-dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
     margin-right: 8px;
 }
 
-.status.pending .dot {
+.admin-status.pending .admin-dot {
     background-color: red;
 }
 
-.status.approved .dot {
+.admin-status.approved .admin-dot {
     background-color: limegreen;
 }
 
-.status.review .dot {
+.admin-status.review .admin-dot {
     background-color: orange;
 }
 
-.actions {
+.admin-actions {
     display: flex;
     flex-direction: column;
     gap: 10px;
     align-items: flex-end;
 }
 
-.actions button {
+.admin-actions button {
     background-color: #666;
     color: white;
     padding: 6px 12px;
@@ -97,6 +97,6 @@
     gap: 6px;
 }
 
-.actions button:hover {
+.admin-actions button:hover {
     background-color: #888;
 }

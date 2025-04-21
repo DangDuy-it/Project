@@ -14,8 +14,8 @@ function AdminList() {
     }, []);
 
     return (
-        <div className="list-main">
-            <div className="list">
+        <div className="admin-list-main">
+            <div className="admin-list">
                 {animeList.map((item) => (
                     <AnimeItem
                         key={item.id}
@@ -34,7 +34,6 @@ function AdminList() {
 }
 
 function AnimeItem({ title, image_url, genre, year, duration, episodes, status }) {
-    // Định dạng trạng thái
     const getStatusClass = () => {
         if (status === 'approved') return 'approved';
         if (status === 'pending') return 'pending';
@@ -42,8 +41,8 @@ function AnimeItem({ title, image_url, genre, year, duration, episodes, status }
     };
 
     return (
-        <div className="anime-item">
-            <div className="anime-image">
+        <div className="admin-anime-item">
+            <div className="admin-anime-image">
                 <img
                     src={image_url || '/placeholder.jpg'}
                     alt={title}
@@ -52,18 +51,18 @@ function AnimeItem({ title, image_url, genre, year, duration, episodes, status }
                     }}
                 />
             </div>
-            <div className="anime-info">
+            <div className="admin-anime-info">
                 <p><strong>Tên phim:</strong> {title}</p>
                 <p><strong>Thể loại:</strong> {genre}</p>
                 <p><strong>Năm phát hành:</strong> {year}</p>
                 <p><strong>Thời lượng:</strong> {duration} phút</p>
                 {episodes && <p><strong style={{ color: 'lightgreen' }}>Số tập:</strong> {episodes} (đang cập nhật)</p>}
-                <div className={`status ${getStatusClass()}`}>
-                    <span className="dot" />
+                <div className={`admin-status ${getStatusClass()}`}>
+                    <span className="admin-dot" />
                     Trạng thái: {status}
                 </div>
             </div>
-            <div className="actions">
+            <div className="admin-actions">
                 <button>Sửa thông tin phim</button>
                 <button>Xóa Phim</button>
             </div>

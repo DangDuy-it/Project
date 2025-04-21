@@ -1,86 +1,108 @@
+/* ===== NAVIGATION BAR ===== */
 nav {
-    width: 100vw;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 200px;
-    background-color: #111;
-    position: relative;
-  }
-  
-  .Logo img {
-    width: 120px;
-    cursor: pointer;
-  }
-  .Header ul{
-    display: flex;
-    gap: 20px;
-    list-style: none;
-  }
-  .Header li{
-    position: relative;
-    padding-right: 80px;
-  }
-  .Header li a{
-    text-decoration: none;
-    color: white;
-    font-weight: bold;
-    transition: 0.3s ease;
-  }
-  
-  .Header li a:hover{
-    color: aquamarine;
-  }
-  
-  
-  
-  .dropdown {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: #444;
-    list-style: none;
-    padding: 10px;
-    margin: 0;
-    border-radius: 5px;
-    z-index: 1000;
-  }
-  
-  .dropdown li {
-    margin: 5px 0;
-  }
-  
-  .dropdown a:hover {
-    text-decoration: underline;
-  }
-  
-  .Search ul {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-  }
-  .Search li {
-    list-style: none;
-  }
-  
-  .Search input {
-    padding: 8px;
-    border: none;
-    border-radius: 20px;
-    outline: none;
-    width: 200px;
-  }
-  
-  .Login {
-    text-decoration: none;
-    color: white;
-    padding: 8px 15px;
-    background-color: red;
-    border-radius: 5px;
-    transition: background 0.3s ease;
-  }
-  
-  .Login:hover {
-    background: aquamarine;
-  }
+  width: 100vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 200px;
+  background-color: #111;
+  position: relative;
+}
+
+/* ===== LOGO ===== */
+.Logo img {
+  width: 120px;
+  cursor: pointer;
+}
+
+/* ===== MAIN NAV LINKS ===== */
+.Header ul {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.Header li {
+  position: relative;
+}
+
+.Header li a,
+.dropdown-title {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  transition: 0.3s ease;
+  padding: 10px;
+  display: inline-block;
+}
+
+.Header li a:hover,
+.dropdown-title:hover {
+  color: aquamarine;
+}
+
+/* ===== DROPDOWN MENU FOR "THỂ LOẠI" ===== */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #111;
+  padding: 15px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  width: 400px;
+
+  /* Grid layout for items */
+  grid-template-columns: repeat(3, auto);
+  gap: 10px;
+}
+
+.dropdown:hover .dropdown-content {
+  display: grid;
+}
+
+.dropdown-content a {
+  text-decoration: none;
+}
+
+.dropdown-content a:hover {
+  text-decoration: underline;
+}
+
+/* ===== SEARCH & LOGIN ===== */
+.Search ul {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.Search input {
+  padding: 8px;
+  border: none;
+  border-radius: 20px;
+  outline: none;
+  width: 200px;
+}
+
+.Login {
+  text-decoration: none;
+  color: white;
+  padding: 8px 15px;
+  background-color: red;
+  border-radius: 5px;
+  transition: background 0.3s ease;
+}
+
+.Login:hover {
+  background: aquamarine;
+}
