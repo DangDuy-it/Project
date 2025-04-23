@@ -22,25 +22,28 @@ function LoginForm() {
                 email,
                 password,
             });
-            // Kiểm tra dữ liệu từ API
+    
             if (!res.data.user) {
                 throw new Error("Dữ liệu người dùng không hợp lệ từ API /login");
             }
-            // Lưu token và thông tin user vào localStorage
+    
+            // Lưu token và user vào localStorage
             localStorage.setItem("token", res.data.token);
             localStorage.setItem("user", JSON.stringify(res.data.user));
+    
             toast.success("Đăng nhập thành công!", {
                 position: "top-right",
                 autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
             });
-            // Gửi sự kiện để thông báo rằng user đã thay đổi
+    
             window.dispatchEvent(new Event("userChanged"));
+    
             setTimeout(() => {
-                navigate("/");
+                if (res.data.user.role_id === 1) {
+                    navigate("/manageuser"); // Chuyển hướng đến trang quản lý người dùng
+                } else {
+                    navigate("/");
+                }
             }, 2000);
         } catch (err) {
             console.error("Lỗi khi đăng nhập:", err);

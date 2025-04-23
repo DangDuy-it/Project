@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import "../styles/Header.css";
 import { Link, useNavigate } from "react-router-dom";
 import logo_web from "../picture/logo-1.webp";
+import axios from "axios";
 
 function Header() {
   const [user, setUser] = useState(null);
@@ -43,6 +44,17 @@ function Header() {
     window.dispatchEvent(new Event("userChanged"));
     navigate("/login");
   };
+
+  // Lấy danh sách thể loại 
+  const [categoryList, setCategoryList] = useState([]);
+  
+  useEffect(() => {
+      axios.get('http://localhost:3001/api/categories')
+          .then(res => {
+              setCategoryList(res.data);
+          })
+          .catch(err => console.error("Lỗi:", err));
+  }, []);
 
   return (
     <nav>

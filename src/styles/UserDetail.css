@@ -1,0 +1,71 @@
+.user-detail {
+    background-color: #1e1e1e;
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 400px;
+    margin: 50px auto;
+    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    text-align: center;
+}
+
+.tag h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.avatar {
+    margin-bottom: 20px;
+    font-size: 50px;
+}
+
+.infor ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+.infor ul li {
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+
+.infor strong {
+    display: inline-block;
+    width: 160px;
+    font-weight: 600;
+    color: #ccc;
+}
+
+.actions {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+button.ban {
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button.active {
+    background-color: #08ea27;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

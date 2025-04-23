@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import '../styles/AnimeList.css';
+import '../styles/List.css';
 
 function List() {
     const [animeList, setAnimeList] = useState([]);
@@ -16,7 +16,7 @@ function List() {
 
     return (
         <div className="list-main">
-            <div className="tag">
+            <div className="list-tag">
                 <li>MỚI CẬP NHẬT</li>
             </div>
             <div className="list">

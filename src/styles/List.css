@@ -1,0 +1,59 @@
+.list{
+    display: grid;
+    grid-template-columns: repeat(5,1fr);
+    gap:25px;
+    padding: 10px;
+    overflow: hidden;
+    max-width: 100%;
+    margin: 0 auto;
+}
+.list-tag li{
+    list-style: none;
+    padding: 10px 20px;
+    margin: 10px;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    background-color: brown;
+    text-align: left; /* Căn chữ bên trong sang trái */
+    width: fit-content; /* Thanh tag chỉ rộng vừa đủ nội dung */
+    display: block;
+}
+
+.anime-image{
+    height: 250px;
+
+}
+.anime-image img{
+    width: 100%; 
+    height: 100%;
+    object-fit: cover;
+}
+.anime-info {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin-top: 10px;
+    color: white;
+}
+.more{
+    justify-items: center;
+    text-align: center;
+    font-weight: bold;
+    color: white;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+}
+.more ul{
+    list-style: none;
+    display: flex;
+    gap: 20px;
+
+}
+.more a{
+    border: 20px;
+    background-color: #444;
+    padding: 20px;
+    border-radius: 10px;
+}
