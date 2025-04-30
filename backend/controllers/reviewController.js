@@ -23,44 +23,29 @@ const createReview = (req, res) => {
             return res.status(400).json({ error: "Điểm đánh giá phải từ 1 đến 10!" });
         }
 
-        // Kiểm tra xem người dùng đã gửi đánh giá cho phim này chưa
+        // Chèn đánh giá vào bảng reviews (không có user_name)
         db.query(
-            "SELECT * FROM reviews WHERE user_id = ? AND movie_id = ?",
-            [user_id, movie_id],
+            "INSERT INTO reviews (movie_id, user_id, rating, comment, review_date) VALUES (?, ?, ?, ?, NOW())",
+            [movie_id, user_id, rating, comment],
             (err, result) => {
                 if (err) {
-                    console.log('Lỗi kiểm tra đánh giá:', err);
+                    console.log('Lỗi khi gửi đánh giá:', err);
                     return res.status(500).json({ error: err.message });
                 }
-                if (result.length > 0) {
-                    return res.status(400).json({ error: "Bạn đã gửi đánh giá cho phim này!" });
-                }
 
-                // Chèn đánh giá vào bảng reviews (không có user_name)
+                // Lấy thông tin đánh giá vừa tạo để trả về
                 db.query(
-                    "INSERT INTO reviews (movie_id, user_id, rating, comment, review_date) VALUES (?, ?, ?, ?, NOW())",
-                    [movie_id, user_id, rating, comment],
-                    (err, result) => {
+                    "SELECT r.review_id, r.rating, r.comment, r.review_date, u.user_name FROM reviews r JOIN users u ON r.user_id = u.user_id WHERE r.review_id = ?",
+                    [result.insertId],
+                    (err, reviews) => {
                         if (err) {
-                            console.log('Lỗi khi gửi đánh giá:', err);
+                            console.log('Lỗi khi lấy đánh giá:', err);
                             return res.status(500).json({ error: err.message });
                         }
-
-                        // Lấy thông tin đánh giá vừa tạo để trả về
-                        db.query(
-                            "SELECT r.review_id, r.rating, r.comment, r.review_date, u.user_name FROM reviews r JOIN users u ON r.user_id = u.user_id WHERE r.review_id = ?",
-                            [result.insertId],
-                            (err, reviews) => {
-                                if (err) {
-                                    console.log('Lỗi khi lấy đánh giá:', err);
-                                    return res.status(500).json({ error: err.message });
-                                }
-                                res.status(201).json({
-                                    message: "Đánh giá thành công!",
-                                    review: reviews[0]
-                                });
-                            }
-                        );
+                        res.status(201).json({
+                            message: "Đánh giá thành công!",
+                            review: reviews[0]
+                        });
                     }
                 );
             }
