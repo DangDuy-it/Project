@@ -5,6 +5,8 @@ import '../styles/List.css';
 
 function List() {
     const [animeList, setAnimeList] = useState([]);
+    const [currentPage, setCurrentPage]= useState(1);
+    const moviesPerPage= 15;
 
     useEffect(() => {
         axios.get('http://localhost:3001/api/movies')
@@ -14,29 +16,48 @@ function List() {
             .catch(err => console.error("Lỗi:", err));
     }, []);
 
+    // Tính tổng số trang
+    const totalPages= Math.ceil(animeList.length/moviesPerPage);
+    // Tính danh sách phim hiện thị theo trang 
+    const indexOfLastMovie= currentPage * moviesPerPage;
+    const indexOfFirstMovie= indexOfLastMovie - moviesPerPage;
+    const currentMovies= animeList.slice(indexOfFirstMovie, indexOfLastMovie);
+
+    const handlePageChange= (pageNumber) =>{
+        setCurrentPage(pageNumber);
+    }
+
     return (
         <div className="list-main">
             <div className="list-tag">
                 <li>MỚI CẬP NHẬT</li>
             </div>
             <div className="list">
-                {animeList.map((item) => (
+                {currentMovies.map((item) => (
+                    <li>
                     <Link 
                         to={`/movie/${item.id}`} 
                         key={item.id}
-                        style={{ textDecoration: 'none' }}
                     >
                         <AnimeItem 
                             title={item.title} 
                             image_url={item.image_url} 
                         />
-                    </Link>
+                    </Link>   
+                    </li>
                 ))}
             </div>
             <div className="more">
                 <ul>
-                    <li><button className="page-link">1</button></li>
-                    <li><button className="page-link">2</button></li>
+                    {Array.from({length: totalPages}, (_, index) =>(
+                        <li key={index}>
+                            <button className={`page-button ${currentPage === index +1 ? 'active' :''}`} 
+                                onClick={()=> handlePageChange(index+1)}
+                                >
+                                {index+1}
+                            </button>
+                        </li>
+                    ))}
                 </ul>
             </div>
         </div>

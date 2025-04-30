@@ -18,8 +18,11 @@
 }
 .submit-button{
     font-weight: bold;
+    font-size: 1.2em;
     color: white;
     background-color: green;
+    padding: 10px 20px;
+    border-radius: 10px;
 }
 .submit-button:hover{
     background-color:#44bd32;

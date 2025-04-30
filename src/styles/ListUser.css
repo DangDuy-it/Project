@@ -66,5 +66,8 @@
 .status.banned li {
     color: #ff1744;
   }
-
+li {
+    font-weight: bold;
+    list-style: none;
+}
 

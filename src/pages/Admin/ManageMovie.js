@@ -1,11 +1,11 @@
 import '../../styles/Home.css';
-import MovieList from '../../components/ListMovie';
+import ListMovie from '../../components/ListMovie';
 
 function Home(){
     return(
         <div>
             <div className="content">
-            <MovieList></MovieList>
+            <ListMovie></ListMovie>
             </div>
         </div>
     );

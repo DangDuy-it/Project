@@ -1,58 +1,60 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import {useEffect,useState} from 'react';
+import '../styles/ListUser.css';
+import {Link} from 'react-router-dom';
 
-const ListUser = () => {
-    const [users, setUsers] = useState([]);
-    const [error, setError] = useState(null);
-
+function ListUser() {
+  const [users, setUsers] = useState([]);
+    // Gọi API khi component mount
     useEffect(() => {
-        axios.get('http://localhost:3001/api/users')
-            .then(res => {
-                if (Array.isArray(res.data)) {
-                    setUsers(res.data);
-                    setError(null);
-                } else {
-                    setUsers([]);
-                    setError('Dữ liệu trả về không đúng định dạng');
-                }
-            })
-            .catch(err => {
-                console.error("Lỗi khi lấy danh sách người dùng:", err);
-                setUsers([]);
-                setError('Không thể tải danh sách người dùng');
-            });
+      fetch('http://localhost:3001/api/users') // backend server của bạn
+        .then((res) => res.json())
+        .then((data) => setUsers(data))
+        .catch((err) => console.error('Lỗi lấy danh sách user:', err));
     }, []);
+  return (
+    <div className="list-users">
+      <div className="list-user-tag">
+        <li>Quản lý tài khoản</li>
+      </div>
+      {/* Header row */}
+      <div className="user-item header">
+        <div className="name"><li>Tên</li></div>
+        <div className="email"><li>Email</li></div>
+        <div className="role"><li>Role</li></div>
+        <div className="status"><li>Trạng thái</li></div>
+      </div>
 
-    return (
-        <div>
-            <h2>Danh sách người dùng</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {users.length === 0 && !error ? (
-                <p>Không có người dùng nào</p>
-            ) : (
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Tên</th>
-                            <th>Email</th>
-                            <th>Vai trò</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {Array.isArray(users) && users.map(user => (
-                            <tr key={user.user_id}>
-                                <td>{user.user_id}</td>
-                                <td>{user.user_name}</td>
-                                <td>{user.email}</td>
-                                <td>{user.role_id === 1 ? "Admin" : "User"}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            )}
-        </div>
-    );
-};
-
+      {/* User list */}
+      <div className="list-user">
+        {users.map((user) => (
+          <Link
+            to={`/admin/user/${user.user_id}`}
+            key={user.user_id}
+            className='nav-link'
+            >
+            <ListItem
+              userName={user.user_name}
+              email={user.email}
+              role={user.role_id === 1 ? 'Admin' : 'User'}
+              status={user.status}
+            />
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
 export default ListUser;
+
+function ListItem({ userName, email, role, status }) {
+  const statusClass = status === 'Active' ? 'status active' : 'status banned';
+
+  return (
+    <div className="user-item">
+      <div className="name"><li>{userName}</li></div>
+      <div className="email"><li>{email}</li></div>
+      <div className="role"><li>{role}</li></div>
+      <div className={statusClass}><li>{status}</li></div>
+    </div>
+  );
+}

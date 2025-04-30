@@ -1,0 +1,18 @@
+.add-movie-container {
+    background-color: #1e272e;
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 700px;
+    margin: 20px auto;
+    gap: 20px;
+    align-items: center;
+}
+.add-movie-container h2{
+    color: white;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+}

@@ -8,6 +8,7 @@ import axios from "axios";
 function Header() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   // Hàm để lấy thông tin user từ localStorage
   const updateUserFromStorage = () => {
@@ -68,7 +69,7 @@ function Header() {
           <li>
             <Link to="/">TRANG CHỦ</Link>
           </li>
-          <li className="dropdown">
+          {/* <li className="dropdown">
             <Link to="/dang-anime" className="dropdown-toggle">
               DẠNG ANIME
             </Link>
@@ -83,29 +84,33 @@ function Header() {
                 <Link to="/dang-anime/phim-3">Phim 3</Link>
               </li>
             </ul>
-          </li>
+          </li> */}
           <li className="dropdown">
-            <Link to="/the-loai" className="dropdown-toggle">
-              THỂ LOẠI
-            </Link>
-            <ul className="dropdown-menu">
-              <li>
-                <Link to="/the-loai/hanh-dong">Hành Động</Link>
-              </li>
-              <li>
-                <Link to="/the-loai/tinh-cam">Tình Cảm</Link>
-              </li>
-              <li>
-                <Link to="/the-loai/vien-tuong">Viễn Tưởng</Link>
-              </li>
-            </ul>
+            <span className="dropdown-title"> THỂ LOẠI</span>
+            <div className="dropdown-content">
+              {categoryList.map((category) => (
+                <Link key={category.category_id} to={`/the-loai/${encodeURIComponent(category.category_name)}`}>
+                  {category.category_name}
+                </Link>
+              ))}
+            </div>
           </li>
         </ul>
       </div>
       <div className="Search">
         <ul>
-          <li>
-            <input placeholder="Tìm kiếm" type="text" />
+        <li>
+            <input
+              placeholder="Tìm kiếm"
+              type="text"
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  navigate(`/movies/search?keyword=${encodeURIComponent(searchKeyword)}`);
+                }
+              }}
+            />
           </li>
           <li>
             {user ? (

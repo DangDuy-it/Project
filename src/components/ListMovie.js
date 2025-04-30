@@ -20,7 +20,9 @@ function AdminList() {
                 <li>Quản lý phim</li>
             </div>
             <div className="button-add">
-                <button>THÊM PHIM</button>
+                <Link to={`/admin/add`}>
+                    <button>THÊM PHIM</button>
+                </Link>
             </div>
             <div className="list-movie">
                 {animeList.map((item) => (
@@ -86,7 +88,7 @@ function AnimeItem({movie_id, title, image_url, genre, year, duration, episodes,
                 </div>
             </div>
             <div className="actions">
-                <Link to={`/edit/${movie_id}`}>
+                <Link to={`/admin/edit/${movie_id}`}>
                     <button>Sửa thông tin phim</button>
                 </Link>
                 <button onClick={() => handleDelete(movie_id)}>Xóa Phim</button>

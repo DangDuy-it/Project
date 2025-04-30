@@ -90,7 +90,6 @@ const getMovieById = (req, res) => {
         movie_id,
         title,
         TRIM(image_url) AS image_url,
-        TRIM(video_url) AS video_url,
         status,
         TRIM(genre) AS genre,
         release_year AS release_year,
@@ -115,10 +114,10 @@ const getMovieById = (req, res) => {
         res.status(200).json(movieData);
     });
 };
-// API: Cập nhật thông tin phim
-const updateMovie= (req, res) => {
-    const movieId= req.params.movie_id;
-    const{
+// API: Cập nhật thông tin phim (cập nhật cả thể loại)
+const updateMovie = (req, res) => {
+    const movieId = req.params.movie_id;
+    const {
         title,
         genre,
         release_year,
@@ -126,21 +125,22 @@ const updateMovie= (req, res) => {
         status,
         description,
         image_url
-    }= req.body;
+    } = req.body;
 
-    const query=`
+    const updateMovieSql = `
         UPDATE movies
-            SET    
-                title=?, 
-                genre=?,         
-                release_year=?,
-                duration=?,
-                status=?,
-                description=?,
-                image_url=? 
+        SET    
+            title=?, 
+            genre=?,         
+            release_year=?,
+            duration=?,
+            status=?,
+            description=?,
+            image_url=? 
         WHERE movie_id=?
     `;
-    db.query(query, [title, genre,release_year, duration,status,description,image_url,movieId ],(err,result)=>{
+
+    db.query(updateMovieSql, [title, genre, release_year, duration, status, description, image_url, movieId], (err, result) => {
         if (err) {
             console.error('Lỗi cập nhật phim:', err);
             return res.status(500).json({ message: 'Lỗi máy chủ khi cập nhật phim', error: err.message });
@@ -150,9 +150,53 @@ const updateMovie= (req, res) => {
             return res.status(404).json({ message: 'Không tìm thấy phim để cập nhật' });
         }
 
-        res.status(200).json({ message: 'Cập nhật phim thành công' });
+        // Bước 2: Xóa các thể loại cũ
+        const deleteOldCategoriesSql = `DELETE FROM movie_categories WHERE movie_id = ?`;
+        db.query(deleteOldCategoriesSql, [movieId], (errDelete) => {
+            if (errDelete) {
+                console.error('Lỗi khi xóa thể loại cũ:', errDelete);
+                return res.status(500).json({ message: 'Lỗi khi xóa liên kết thể loại cũ', error: errDelete.message });
+            }
+
+            // Bước 3: Xử lý lại genre mới
+            const genreNames = genre.split(',').map(name => name.trim()).filter(name => name !== '');
+            if (genreNames.length === 0) {
+                return res.status(200).json({ message: 'Cập nhật phim thành công (không có thể loại để cập nhật).' });
+            }
+
+            // Bước 4: Tìm category_id tương ứng
+            const findCategoriesSql = `
+                SELECT category_id FROM categories WHERE category_name IN (?)
+            `;
+            db.query(findCategoriesSql, [genreNames], (errFind, categories) => {
+                if (errFind) {
+                    console.error('Lỗi khi tìm category_id:', errFind);
+                    return res.status(500).json({ message: 'Lỗi khi tìm category_id', error: errFind.message });
+                }
+
+                if (categories.length === 0) {
+                    return res.status(200).json({ message: 'Cập nhật phim thành công nhưng không tìm thấy thể loại tương ứng.' });
+                }
+
+                // Bước 5: Chèn mới vào bảng movie_categories
+                const movieCategoriesValues = categories.map(row => [movieId, row.category_id]);
+                const insertMovieCategoriesSql = `
+                    INSERT INTO movie_categories (movie_id, category_id) VALUES ?
+                `;
+                db.query(insertMovieCategoriesSql, [movieCategoriesValues], (errInsert) => {
+                    if (errInsert) {
+                        console.error('Lỗi khi thêm thể loại mới:', errInsert);
+                        return res.status(500).json({ message: 'Cập nhật phim thành công nhưng lỗi khi thêm thể loại mới', error: errInsert.message });
+                    }
+
+                    // Thành công hoàn toàn
+                    res.status(200).json({ message: `Cập nhật phim và ${categories.length} thể loại thành công.` });
+                });
+            });
+        });
     });
 };
+
 // API: Thêm tập phim cho bộ phim
 const addEpisode = (req, res) => {
     const { movieId } = req.params;
@@ -168,6 +212,128 @@ const addEpisode = (req, res) => {
         res.status(201).json({ message: 'Tập phim đã được thêm thành công' });
     });
 }
+// API: Thêm một bộ phim
+const addMovie = (req, res) => {
+    const {
+        title,
+        description,
+        release_year, 
+        image_url,
+        genre,
+        duration,
+        status: statusFromRequest, // Lấy giá trị status từ request body
+        background_url // Lấy cả background_url
+    } = req.body;
+
+    // >>> Xử lý giá trị mặc định cho status trước khi dùng trong validation/query <<<
+    const finalStatus = statusFromRequest || 'Pending';
+
+    // Basic validation
+    if (!title || !description || !release_year || !duration || !image_url || !genre || !finalStatus || !background_url) {
+        console.warn('Yêu cầu thêm phim thiếu thông tin bắt buộc:', req.body);
+        return res.status(400).json({ error: 'Thiếu thông tin phim bắt buộc (title, description, year, duration, image_url, genre, status).' });
+    }
+    const sql = `
+        INSERT INTO movies (title, description, release_year, duration, image_url, genre, status, background_url)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    // Chuẩn bị mảng các giá trị để thay thế cho dấu ?
+    const values = [
+        title,
+        description,
+        release_year,
+        duration,
+        image_url,
+        genre,
+        finalStatus, 
+        background_url 
+    ];
+
+    // 1. Thêm phim vào bảng movies
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            console.error('Lỗi khi thực hiện truy vấn INSERT:', err);
+            // Gửi phản hồi lỗi server
+            return res.status(500).json({ error: 'Đã xảy ra lỗi server khi thêm phim.' });
+        }
+        if (result.affectedRows === 1) {
+            const newMovieId= result.insertId; // Lấy movie_id vừa tạo
+
+            // 2.Xử lý chuỗi genre và tìm cateogory_id
+            // Tách chuỗi genre bằng dấu phẩy, loại bỏ khoảng trắng thừa 
+            const genreNames= genre.split(',').map(name=>  name.trim()).filter(name => name!= '');
+
+            if (genreNames.length===0){
+                res.status(201).json({
+                    message: 'Thêm phim thành công ( Không có thể loại nào được liên kết )',
+                    movie_id: newMovieId
+                });
+            }
+            // Chuẩn bị truy vấn để tìm category_id cho tên các thể loại 
+            const findCategoriesSql = ` SELECT 
+                                            category_id 
+                                        FROM categories 
+                                        WHERE category_name IN (?)`;
+            db.query(findCategoriesSql, [genreNames], (errCategories, resultCategories) => {
+                if (errCategories){
+                    console.error('Lỗi khi tìm category_id: ', errCategories);
+                    return res.status(201).json({
+                        message: 'Thêm phim thành công, nhưng gặp lỗi khi liên kết thể loại',
+                        movie_id: newMovieId,
+                        category_error: errCategories.message 
+                    });
+                }
+                if ( resultCategories.length===0){
+                    console.warn(`Không tìm thấy category_id cho các thể loại: ${genreNames.json(',')}`);
+
+                    return res.status(201).json({
+                        message: 'Thêm phim thành công, nhưng không tìm thấy thể loại nào tương ứng để liên kết',
+                        movie_id: newMovieId,
+                    });
+                }
+                // 3. Chuẩn bị và thêm dữ liêu vào bảng movie_categories
+                const movieCategoriesValues = resultCategories.map(row=> [newMovieId, row.category_id]);
+
+                const insertMovieCategoriesSql=`INSERT INTO movie_categories (
+                                                        movie_id, 
+                                                        category_id)
+                                                VALUES ?
+                                                `;
+                db.query(insertMovieCategoriesSql, [movieCategoriesValues],(errMovieCategories, resultMovieCategories)=>{
+                    if (errMovieCategories){
+                        console.error('Lỗi khi thêm dữ liệu vào bảng movie_categories:' , errMovieCategories);
+
+                        return res.status(201).json({
+                            message: 'Thêm phim thành công, nhưng gặp lỗi khi thêm vào bảng liên kết thể loại.',
+                            movie_id: newMovieId,
+                            link_error: errMovieCategories.message
+                        });
+                    }
+                    // Kiểm tra số lượng bản ghi đã được thêm vào movie_categories
+                    if (resultMovieCategories.affectedRows > 0) {
+                        // 4. Hoàn thành: Gửi phản hồi thành công thêm phim và liên kết thể loại
+                        res.status(201).json({
+                            message: `Thêm phim thành công và liên kết với ${resultMovieCategories.affectedRows} thể loại.`,
+                            movie_id: newMovieId
+                        });
+                    } else{
+                        // Trường hợp không có lỗi nhưng không có dòng nào được thêm vào movie_categories
+                        console.warn('Không có dữ liệu nào được thêm vào movie_categories');
+                        res.status(201).json({
+                            message: 'Thêm phim thành công, nhưng không thêm được dữ liệu vào bảng movie_categories',
+                            movie_id: newMovieId
+                        });
+                    }
+                });
+            });
+        } else {
+             console.error('Thêm phim thất bại: affectedRows không bằng 1.', result);
+             res.status(500).json({ error: 'Thêm phim thất bại, không có hàng nào được thêm vào cơ sở dữ liệu.' });
+        }
+    });
+};
+
 // API: Xóa một bộ phim
 const deleteMovie = (req, res) => {
     const movieId = req.params.movie_id; // Lấy ID phim từ params của URL
@@ -222,6 +388,35 @@ const getSliderMovie = (req, res) =>{
         res.status(200).json(result);
     })
 }
+// API: Tìm kiếm phim theo tiêu đề hoặc thể loại
+const searchMovies = (req, res) => {
+    const keyword = req.query.q;
+    if (!keyword) {
+        return res.status(400).json({ error: 'Vui lòng nhập từ khóa tìm kiếm.' });
+    }
+
+    const likeKeyword = `%${keyword}%`;
+    const sql = `
+        SELECT 
+            movie_id AS id,
+            title,
+            image_url,
+            genre,
+            description,
+            status
+        FROM movies
+        WHERE (title LIKE ? OR genre LIKE ?) AND status = 'Approved'
+        ORDER BY movie_id DESC
+    `;
+
+    db.query(sql, [likeKeyword, likeKeyword], (err, results) => {
+        if (err) {
+            console.error('Lỗi tìm kiếm phim:', err);
+            return res.status(500).json({ error: 'Lỗi máy chủ khi tìm kiếm phim' });
+        }
+        res.status(200).json(results);
+    });
+};
 
 
 module.exports = {
@@ -231,6 +426,9 @@ module.exports = {
     getMovieById,
     updateMovie,
     addEpisode,
+    addMovie,
     deleteMovie,
-    getSliderMovie
+    getSliderMovie,
+    searchMovies,
 };
+

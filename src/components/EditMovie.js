@@ -42,7 +42,7 @@ function EditMovie() {
                 setLoading(false);
             });
     }, [movieId]);
-
+    // Xử lý thay đổi 
     const handleChange = (e) => {
         setMovie({ ...movie, [e.target.name]: e.target.value });
     };
@@ -84,7 +84,7 @@ function EditMovie() {
                     <div className="button-container">
                         <button type="submit" className="save-button">Lưu thay đổi</button>
                         <button type="button" onClick={() => navigate('/managemovie')} className="cancel-button">Hủy</button>
-                        <button type="button" onClick={()=> navigate(`/add/${movieId}/episode`)} className='add-episode-button'>Thêm tập phim</button>
+                        <button type="button" onClick={()=> navigate(`/admin/add/${movieId}/episode`)} className='add-episode-button'>Thêm tập phim</button>
                     </div>
                 </div>
                 {/* Các trường input như trước */}

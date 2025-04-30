@@ -28,7 +28,7 @@ function AddEpisode() {
         axios.post(`http://localhost:3001/api/movies/${movieId}/episodes`, episode)
             .then(() => {
                 alert('Thêm tập phim thành công!');
-                navigate(`/edit/${movieId}`); // Quay lại trang sửa phim
+                navigate(`/admin/edit/${movieId}`); // Quay lại trang sửa phim
             })
             .catch(err => {
                 console.error('Lỗi khi thêm tập phim:', err);

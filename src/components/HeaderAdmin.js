@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'; // Thêm useNavigate
-import '../styles/Header.css';
+import '../styles/HeaderAdmin.css';
 
 function HeaderAdmin() {
     const navigate = useNavigate(); // Sử dụng useNavigate để điều hướng
@@ -15,7 +15,7 @@ function HeaderAdmin() {
     return (
         <nav>
             <div className="logo">
-                <img src="https://cdn.animevietsub.one/data/logo/logoz.png" alt="Logo" />
+                <img src="/images/logo-1.webp" alt="Logo" />
             </div>
             <div className="header">
                 <ul>
@@ -31,13 +31,13 @@ function HeaderAdmin() {
             <div className="user-infor">
                 <ul>
                     <li>Admin</li>
-                    <li>
-                        <button onClick={handleLogout} style={{ cursor: 'pointer', background: 'red', color: 'white', border: 'none', padding: '5px 10px' }}>
+                    <button onClick={handleLogout} className="button-logout" >
                             Đăng Xuất
                         </button>
-                    </li>
                 </ul>
             </div>
+
+                    
         </nav>
     );
 }

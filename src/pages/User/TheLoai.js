@@ -1,7 +1,7 @@
 import React from 'react';
 import '../../styles/Home.css'; 
 import Notification from '../../components/Notification';
-import List from '../../components/List';
+import CategoryMovies from '../../components/CategoryMovies';
 
 
 function TheLoai(){
@@ -9,7 +9,7 @@ function TheLoai(){
         <div>
             <div className="content">
                 <Notification />
-                <List />
+                <CategoryMovies />
             </div>
         </div>
     );

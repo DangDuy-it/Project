@@ -1,9 +1,10 @@
 const express = require('express');
-const router = express.Router();
+const router = express.Router(); // Khởi tạo router
+
 const categoryController = require('../controllers/categoryController');
 
-router.get('/api/categorys',categoryController.getCategorys); // Lấy danh sách thể loại 
-
-
-
-module.exports= router;
+// Định nghĩa route để lấy danh sách thể loại
+router.get('/api/categories', categoryController.getCategories); // Lấy danh sách thể loại
+router.get('/api/categories/:name',categoryController.getMoviesByCategoryName);
+// Export router để sử dụng trong file server chính
+module.exports = router;
