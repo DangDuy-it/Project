@@ -15,7 +15,7 @@ function HeaderAdmin() {
     return (
         <nav>
             <div className="logo">
-                <img src="/images/logo-1.webp" alt="Logo" />
+                <img src="https://cdn.animevietsub.one/data/logo/logoz.png" alt="Logo" />
             </div>
             <div className="header">
                 <ul>

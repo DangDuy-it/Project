@@ -106,38 +106,6 @@ function Profile() {
                     {loading ? "Đang xử lý..." : "Cập Nhật"}
                 </button>
             </form>
-
-            <div className="favorites-section">
-                <h3>Danh Sách Phim Yêu Thích</h3>
-                {favorites.length > 0 ? (
-                    <ul>
-                        {favorites.map((movieId) => (
-                            <li key={movieId}>
-                                <Link to={`/movie/${movieId}`}>Phim ID: {movieId}</Link>
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p>Chưa có phim nào trong danh sách yêu thích.</p>
-                )}
-            </div>
-
-            <div className="history-section">
-                <h3>Lịch Sử Xem Phim</h3>
-                {history.length > 0 ? (
-                    <ul>
-                        {history.map((item) => (
-                            <li key={item.id}>
-                                <Link to={`/movie/${item.id}`}>
-                                    {item.title} (Xem lúc: {new Date(item.timestamp).toLocaleString()})
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p>Chưa có lịch sử xem phim.</p>
-                )}
-            </div>
         </div>
     );
 }

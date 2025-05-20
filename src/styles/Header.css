@@ -54,7 +54,7 @@ nav {
 
   /* Grid layout for items */
   grid-template-columns: repeat(3, auto);
-  gap: 10px;
+  gap: 15px;
 }
 .dropdown-title {
   font-weight: bold;
@@ -107,7 +107,38 @@ nav {
   align-items: center;
   gap: 10px;
 }
-
+.user-dropdown{
+  position: relative;
+  display: inline-block;
+}
+.user-name{
+  cursor: pointer;
+}
+.dropdown-menu{
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #444;
+  color: #ecf0f1;
+  padding: 8px 0;
+  margin: 0;
+  z-index: 1000;
+  min-width: 180px;
+  border-radius: 10px;
+  display: flex;
+  flex-wrap: wrap;
+}
+.dropdown-menu li{
+  padding: 5px 10px;
+  cursor: pointer;
+  align-items: center;
+  display: flex;
+  flex-basis: auto;
+  transition: background-color 0.2s ease;
+}
+.dropdown-menu li:hover{
+  color: aquamarine;
+}
 .logout-btn {
   background-color: brown;
   color: white;

@@ -7,6 +7,7 @@
     max-width: 1200px; /* Giới hạn chiều rộng tối đa */
     margin: 0 auto; /* Căn giữa khối nội dung */
     color: white; /* Màu chữ mặc định */
+    min-height: 100vh;
     /* Có thể thêm background-color hoặc background-image */
 }
 

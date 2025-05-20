@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import "../styles/MoviePlayer.css";
 import axios from "axios";
@@ -13,44 +13,119 @@ const MoviePlayer = () => {
     const [reviews, setReviews] = useState([]);
     const [newComment, setNewComment] = useState("");
     const [rating, setRating] = useState(10);
-    const [isFavorite, setIsFavorite] = useState(false);
     const navigate = useNavigate();
+    const isHistoryRecorded = useRef(false);
+
+    const handleTokenError = (err) => {
+        if (err.response && err.response.status === 403 && err.response.data?.error === 'Token không hợp lệ hoặc đã hết hạn') {
+            toast.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+            localStorage.removeItem("token");
+            navigate("/login");
+            return true;
+        }
+        return false;
+    };
+
+    const recordHistoryToDB = async (movieId) => {
+        if (isHistoryRecorded.current) {
+            console.log("Lịch sử đã được ghi trước đó, bỏ qua.");
+            return;
+        }
+
+        const token = localStorage.getItem("token");
+        console.log("Gọi recordHistoryToDB với movieId:", movieId, "Token:", token);
+
+        if (!token) {
+            console.log("Không có token, bỏ qua ghi lịch sử.");
+            toast.error("Vui lòng đăng nhập để ghi lịch sử xem phim!");
+            return;
+        }
+
+        if (!movieId) {
+            console.log("movieId không hợp lệ:", movieId);
+            toast.error("Không thể ghi lịch sử: movieId không hợp lệ");
+            return;
+        }
+
+        try {
+            const response = await axios.post(
+                "http://localhost:3001/api/watch-history",
+                { movie_id: movieId },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            console.log("Phản hồi từ server:", response.data);
+            toast.success("Đã ghi lịch sử xem phim thành công!");
+            isHistoryRecorded.current = true;
+        } catch (err) {
+            console.error("Lỗi chi tiết khi ghi lịch sử:", err.response?.data || err.message);
+            if (!handleTokenError(err)) {
+                toast.error("Không thể ghi lịch sử xem phim: " + (err.response?.data?.error || err.message));
+            }
+        }
+    };
 
     useEffect(() => {
-        const fetchMovie = async () => {
+        console.log("useEffect chạy với id:", id);
+        let isMounted = true;
+
+        const fetchMovieData = async () => {
             try {
-                const res = await fetch(`http://localhost:3001/api/movies/${id}`);
-                const data = await res.json();
-                if (data.episodes && Array.isArray(data.episodes)) {
-                    setMovie(data);
-                    if (data.episodes.length > 0) {
-                        setCurrentEpisode(data.episodes[0]);
-                        recordHistory(data.title, id);
+                const movieRes = await fetch(`http://localhost:3001/api/movies/${id}`);
+                const movieData = await movieRes.json();
+                console.log("Dữ liệu phim chi tiết:", movieData);
+
+                if (!isMounted) return;
+
+                if (movieData.episodes && Array.isArray(movieData.episodes)) {
+                    // Kiểm tra trùng lặp episode_id
+                    const episodeIds = movieData.episodes.map(ep => ep.episode_id);
+                    const hasDuplicateEpisodes = new Set(episodeIds).size !== episodeIds.length;
+                    if (hasDuplicateEpisodes) {
+                        console.warn("Phát hiện episode_id trùng lặp:", episodeIds);
+                    }
+
+                    setMovie(movieData);
+                    if (movieData.episodes.length > 0) {
+                        setCurrentEpisode(movieData.episodes[0]);
+                    } else {
+                        console.log("Không có tập phim nào trong dữ liệu.");
                     }
                 } else {
-                    setMovie({ ...data, episodes: [] });
+                    setMovie({ ...movieData, episodes: [] });
+                    console.log("Dữ liệu episodes không hợp lệ hoặc trống.");
+                }
+
+                console.log("Tự động ghi lịch sử khi vào trang, movie_id:", id);
+                await recordHistoryToDB(id);
+
+                const reviewsRes = await axios.get(`http://localhost:3001/api/reviews/${id}`);
+                if (isMounted) {
+                    // Kiểm tra trùng lặp review_id
+                    const reviewIds = reviewsRes.data.map(review => review.review_id);
+                    const hasDuplicateReviews = new Set(reviewIds).size !== reviewIds.length;
+                    if (hasDuplicateReviews) {
+                        console.warn("Phát hiện review_id trùng lặp:", reviewIds);
+                    }
+                    setReviews(reviewsRes.data);
                 }
             } catch (err) {
-                console.error("Lỗi:", err);
+                console.error("Lỗi fetch dữ liệu phim:", err);
+                if (isMounted) {
+                    toast.error("Không thể tải dữ liệu phim.");
+                }
             } finally {
-                setLoading(false);
+                if (isMounted) {
+                    setLoading(false);
+                }
             }
         };
 
-        const fetchReviews = async () => {
-            try {
-                const res = await axios.get(`http://localhost:3001/api/reviews/${id}`);
-                setReviews(res.data);
-            } catch (err) {
-                console.error("Lỗi lấy đánh giá:", err);
-            }
+        fetchMovieData();
+
+        return () => {
+            isMounted = false;
+            isHistoryRecorded.current = false;
         };
-
-        const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
-        setIsFavorite(favorites.includes(id));
-
-        fetchMovie();
-        fetchReviews();
     }, [id]);
 
     const handleReviewSubmit = async (e) => {
@@ -80,28 +155,6 @@ const MoviePlayer = () => {
         }
     };
 
-    const toggleFavorite = () => {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            toast.error("Vui lòng đăng nhập để thêm vào danh sách yêu thích!");
-            navigate("/login");
-            return;
-        }
-
-        const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
-        if (isFavorite) {
-            const newFavorites = favorites.filter((fav) => fav !== id);
-            localStorage.setItem("favorites", JSON.stringify(newFavorites));
-            setIsFavorite(false);
-            toast.success("Đã xóa khỏi danh sách yêu thích!");
-        } else {
-            favorites.push(id);
-            localStorage.setItem("favorites", JSON.stringify(favorites));
-            setIsFavorite(true);
-            toast.success("Đã thêm vào danh sách yêu thích!");
-        }
-    };
-
     const recordHistory = (title, movieId) => {
         const history = JSON.parse(localStorage.getItem("watchHistory") || "[]");
         const newEntry = { id: movieId, title, timestamp: new Date().toISOString() };
@@ -110,6 +163,12 @@ const MoviePlayer = () => {
             ...history.filter((item) => item.id !== movieId),
         ].slice(0, 10);
         localStorage.setItem("watchHistory", JSON.stringify(updatedHistory));
+    };
+
+    const handleEpisodeClick = (ep) => {
+        console.log("handleEpisodeClick được gọi với ep:", ep, "movie_id:", id);
+        setCurrentEpisode(ep);
+        recordHistory(movie?.title, id);
     };
 
     if (loading) return <div>Đang tải...</div>;
@@ -128,7 +187,6 @@ const MoviePlayer = () => {
                     height="400"
                     src={currentEpisode?.video_url}
                     title={movie.title}
-                    frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                 ></iframe>
@@ -137,38 +195,27 @@ const MoviePlayer = () => {
                 <h3>DANH SÁCH TẬP</h3>
                 <div className="episodes">
                     {Array.isArray(movie.episodes) && movie.episodes.length > 0 ? (
-                        movie.episodes.map((ep) => (
+                        movie.episodes.map((ep, index) => (
                             <button
-                                key={ep.episode_id}
+                                key={`episode-${index}`} // Sử dụng index để đảm bảo key duy nhất
                                 className={
                                     Number(ep.episode) === Number(currentEpisode?.episode)
                                         ? "active"
                                         : ""
                                 }
-                                onClick={() => {
-                                    setCurrentEpisode(ep);
-                                    recordHistory(movie.title, id);
-                                }}
+                                onClick={() => handleEpisodeClick(ep)}
                             >
                                 Tập {ep.episode}
                             </button>
                         ))
                     ) : (
-                        <p>Chưa có tập phim nào.</p>
+                        <p>Không có tập phim nào để hiển thị.</p>
                     )}
                 </div>
             </div>
-            <div className="movie-info">
+            <div className="movie-player-info">
                 <div className="poster-container">
                     <img src={movie.image_url} alt={movie.title} className="movie-poster" />
-                    <button
-                        onClick={toggleFavorite}
-                        className={`favorite-btn ${isFavorite ? "remove-favorite" : "add-favorite"}`} // Thêm class động
-                    >
-                        {isFavorite
-                            ? "Xóa khỏi danh sách yêu thích"
-                            : "Thêm vào danh sách yêu thích"}
-                    </button>
                 </div>
                 <div className="movie-details">
                     <h3>{movie.title}</h3>
@@ -209,8 +256,8 @@ const MoviePlayer = () => {
                 </form>
                 <div className="reviews-list">
                     {reviews.length > 0 ? (
-                        reviews.map((review) => (
-                            <div key={review.review_id} className="review">
+                        reviews.map((review, index) => (
+                            <div key={`review-${index}`} className="review">
                                 <p>
                                     <strong>{review.user_name}</strong> (
                                     {new Date(review.review_date).toLocaleString()}) -

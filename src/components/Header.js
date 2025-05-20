@@ -9,6 +9,7 @@ function Header() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
 
   // Hàm để lấy thông tin user từ localStorage
   const updateUserFromStorage = () => {
@@ -46,15 +47,16 @@ function Header() {
     navigate("/login");
   };
 
-  // Lấy danh sách thể loại 
+  // Lấy danh sách thể loại
   const [categoryList, setCategoryList] = useState([]);
-  
+
   useEffect(() => {
-      axios.get('http://localhost:3001/api/categories')
-          .then(res => {
-              setCategoryList(res.data);
-          })
-          .catch(err => console.error("Lỗi:", err));
+    axios
+      .get("http://localhost:3001/api/categories")
+      .then((res) => {
+        setCategoryList(res.data);
+      })
+      .catch((err) => console.error("Lỗi:", err));
   }, []);
 
   return (
@@ -69,27 +71,14 @@ function Header() {
           <li>
             <Link to="/">TRANG CHỦ</Link>
           </li>
-          {/* <li className="dropdown">
-            <Link to="/dang-anime" className="dropdown-toggle">
-              DẠNG ANIME
-            </Link>
-            <ul className="dropdown-menu">
-              <li>
-                <Link to="/dang-anime/phim-1">Phim 1</Link>
-              </li>
-              <li>
-                <Link to="/dang-anime/phim-2">Phim 2</Link>
-              </li>
-              <li>
-                <Link to="/dang-anime/phim-3">Phim 3</Link>
-              </li>
-            </ul>
-          </li> */}
           <li className="dropdown">
-            <span className="dropdown-title"> THỂ LOẠI</span>
+            <span className="dropdown-title">THỂ LOẠI</span>
             <div className="dropdown-content">
               {categoryList.map((category) => (
-                <Link key={category.category_id} to={`/the-loai/${encodeURIComponent(category.category_name)}`}>
+                <Link
+                  key={category.category_id}
+                  to={`/the-loai/${encodeURIComponent(category.category_name)}`}
+                >
                   {category.category_name}
                 </Link>
               ))}
@@ -99,7 +88,7 @@ function Header() {
       </div>
       <div className="Search">
         <ul>
-        <li>
+          <li>
             <input
               placeholder="Tìm kiếm"
               type="text"
@@ -115,9 +104,18 @@ function Header() {
           <li>
             {user ? (
               <div className="user-info">
-                <Link to="/profile" className="user-name">
-                  Xin chào, {user.user_name || user.email || "Người dùng"}
-                </Link>
+                <div className="user-dropdown">
+                  <div className="user-name" onClick={() => setShowDropdown(!showDropdown)}>
+                    Xin chào, {user.user_name}
+                  </div>
+                  {showDropdown && (
+                    <ul className="dropdown-menu">
+                      <li onClick={() => navigate("/profile")}>Quản lý thông tin</li>
+                      <li onClick={() => navigate("/movies/favorites")}>Danh sách yêu thích</li>
+                      <li onClick={() => navigate("/movies/watch-history")}>Lịch sử xem phim</li>
+                    </ul>
+                  )}
+                </div>
                 <button onClick={handleLogout} className="logout-btn">
                   Đăng Xuất
                 </button>

@@ -1,0 +1,27 @@
+.watch-history-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    color: white;
+    min-height: 100vh;
+}
+
+.no-history {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.watch-history-container h2 {
+    margin: 0;
+    font-size: 1.2em;
+    width: fit-content;
+    background-color: brown;
+    padding: 10px 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.watched-at {
+    font-size: 0.9em;
+    color: #ccc;
+}

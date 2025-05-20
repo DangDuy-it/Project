@@ -17,6 +17,30 @@ function Profile() {
     const [history, setHistory] = useState([]);
     const navigate = useNavigate();
 
+    const fetchFavorites = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigate("/login");
+            return;
+        }
+
+        try {
+            const res = await axios.get("http://localhost:3001/api/users/favorites", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setFavorites(res.data || []);
+        } catch (err) {
+            console.error("Lỗi lấy danh sách yêu thích:", err);
+            if (err.response?.status === 401 || err.response?.status === 403) {
+                toast.error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại!");
+                navigate("/login");
+            } else {
+                toast.error("Không thể tải danh sách yêu thích!");
+            }
+            setFavorites([]);
+        }
+    };
+
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
@@ -25,12 +49,24 @@ function Profile() {
             setUserName(parsedUser.user_name);
             setEmail(parsedUser.email);
 
-            // Lấy danh sách yêu thích và lịch sử
-            setFavorites(JSON.parse(localStorage.getItem("favorites") || "[]"));
+            // Lấy lịch sử xem phim từ localStorage
             setHistory(JSON.parse(localStorage.getItem("watchHistory") || "[]"));
+
+            fetchFavorites();
         } else {
             navigate("/login");
         }
+
+        // Lắng nghe sự kiện favorite thay đổi từ các component khác
+        const handleFavoriteChange = () => {
+            fetchFavorites();
+        };
+
+        window.addEventListener("favoriteChanged", handleFavoriteChange);
+
+        return () => {
+            window.removeEventListener("favoriteChanged", handleFavoriteChange);
+        };
     }, [navigate]);
 
     const handleSubmit = async (e) => {
@@ -54,7 +90,6 @@ function Profile() {
             localStorage.setItem("token", res.data.token);
             localStorage.setItem("user", JSON.stringify(res.data.user));
             setUser(res.data.user);
-            // Gửi sự kiện để thông báo rằng user đã thay đổi
             window.dispatchEvent(new Event("userChanged"));
             toast.success("Cập nhật thông tin thành công!", {
                 position: "top-right",
@@ -66,8 +101,34 @@ function Profile() {
             });
         } catch (err) {
             setError(err.response?.data?.error || "Có lỗi xảy ra, vui lòng thử lại");
+            toast.error(err.response?.data?.error || "Có lỗi xảy ra, vui lòng thử lại");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const removeFavorite = async (movieId) => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            toast.error("Vui lòng đăng nhập để tiếp tục!");
+            navigate("/login");
+            return;
+        }
+
+        try {
+            await axios.delete(`http://localhost:3001/api/users/favorites/${movieId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setFavorites(favorites.filter((movie) => movie.movie_id !== movieId));
+            toast.success("Đã xóa phim khỏi danh sách yêu thích!");
+            window.dispatchEvent(new Event("favoriteChanged"));
+        } catch (err) {
+            toast.error(
+                "Lỗi: " + (err.response?.data?.error || "Thử lại sau")
+            );
+            if (err.response?.status === 401 || err.response?.status === 403) {
+                navigate("/login");
+            }
         }
     };
 
@@ -111,9 +172,18 @@ function Profile() {
                 <h3>Danh Sách Phim Yêu Thích</h3>
                 {favorites.length > 0 ? (
                     <ul>
-                        {favorites.map((movieId) => (
-                            <li key={movieId}>
-                                <Link to={`/movie/${movieId}`}>Phim ID: {movieId}</Link>
+                        {favorites.map((movie) => (
+                            <li key={movie.movie_id}>
+                                <Link to={`/movie/${movie.movie_id}`}>
+                                    {movie.title} ({movie.release_year}) - {movie.genre}
+                                </Link>
+                                <button
+                                    onClick={() => removeFavorite(movie.movie_id)}
+                                    className="remove-favorite-btn"
+                                    style={{ marginLeft: "10px", color: "red" }}
+                                >
+                                    Xóa
+                                </button>
                             </li>
                         ))}
                     </ul>

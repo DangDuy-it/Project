@@ -38,7 +38,7 @@ const register = async (req, res) => {
                         return res.status(500).json({ error: err.message });
                     }
                     const user = { user_id: result.insertId, user_name: name, email };
-                    const token = jwt.sign(user, process.env.JWT_SECRET || 'your_secret_key', { expiresIn: '1h' });
+                    const token = jwt.sign(user, 'your_secret_key', { expiresIn: '1h' });
 
                     res.status(201).json({
                         message: 'Đăng ký thành công!',
@@ -76,7 +76,7 @@ const login = (req, res) => {
 
         const token = jwt.sign(
             { user_id: user.user_id, user_name: user.user_name, email: user.email },
-            process.env.JWT_SECRET || 'your_secret_key',
+            'your_secret_key',
             { expiresIn: '1h' }
         );
 
@@ -141,34 +141,18 @@ const updateUser = async (req, res) => {
                 updateValues.push(user_id);
                 const query = `UPDATE users SET ${updateFields.join(', ')} WHERE user_id = ?`;
 
-                db.query(query, updateValues, (err) => {
+                db.query(query, updateValues, (err, result) => {
                     if (err) {
                         console.log('Lỗi khi cập nhật user:', err);
                         return res.status(500).json({ error: err.message });
                     }
-
-                    // Lấy thông tin người dùng sau khi cập nhật
-                    db.query(
-                        'SELECT user_id, user_name, email, role_id FROM users WHERE user_id = ?',
-                        [user_id],
-                        (err, result) => {
-                            if (err) {
-                                console.log('Lỗi khi lấy thông tin user:', err);
-                                return res.status(500).json({ error: err.message });
-                            }
-                            const updatedUser = result[0];
-                            const newToken = jwt.sign(
-                                { user_id: updatedUser.user_id, user_name: updatedUser.user_name, email: updatedUser.email },
-                                process.env.JWT_SECRET || 'your_secret_key',
-                                { expiresIn: '1h' }
-                            );
-                            res.json({
-                                message: 'Cập nhật thông tin thành công!',
-                                token: newToken,
-                                user: updatedUser
-                            });
-                        }
-                    );
+                    const updatedUser = { user_id, user_name: user_name || req.user.user_name, email: email || req.user.email };
+                    const newToken = jwt.sign(updatedUser, 'your_secret_key', { expiresIn: '1h' });
+                    res.json({
+                        message: 'Cập nhật thông tin thành công!',
+                        token: newToken,
+                        user: updatedUser
+                    });
                 });
             }
         );

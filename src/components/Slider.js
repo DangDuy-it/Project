@@ -29,7 +29,7 @@ const AnimeSlider=() => {
     };
     const handleWatchClick = ( movieId)=>{
         if ( movieId){
-            navigate(`/movie/${movieId}`);
+            navigate(`/movieDetail/${movieId}`);
         }
         else {
             console.warn(`Không thể chuyển hướng tập phim`);

@@ -36,7 +36,7 @@ function List() {
                 {currentMovies.map((item) => (
                     <li>
                     <Link 
-                        to={`/movie/${item.id}`} 
+                        to={`/movieDetail/${item.id}`} 
                         key={item.id}
                     >
                         <AnimeItem 

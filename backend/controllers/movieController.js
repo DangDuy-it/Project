@@ -27,7 +27,11 @@ const getMovieDetails = (req, res) => {
             movie_id AS id,
             title,
             description,
+            release_year,
+            genre,
+            duration,
             image_url,
+            background_url,
             status
         FROM movies
         WHERE movie_id = ? AND status = 'Approved'
