@@ -5,12 +5,12 @@ import { Link, useNavigate } from "react-router-dom";
 import logo_web from "../picture/logo-1.webp";
 import axios from "axios";
 
+
 function Header() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [showDropdown, setShowDropdown] = useState(false);
-
+  const [showDropdown, setShowDropdown]= useState(false);
   // Hàm để lấy thông tin user từ localStorage
   const updateUserFromStorage = () => {
     const storedUser = localStorage.getItem("user");
@@ -32,6 +32,7 @@ function Header() {
     const handleUserChange = () => {
       updateUserFromStorage();
     };
+  
 
     window.addEventListener("userChanged", handleUserChange);
     return () => {
@@ -47,16 +48,15 @@ function Header() {
     navigate("/login");
   };
 
-  // Lấy danh sách thể loại
+  // Lấy danh sách thể loại 
   const [categoryList, setCategoryList] = useState([]);
-
+  
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/api/categories")
-      .then((res) => {
-        setCategoryList(res.data);
-      })
-      .catch((err) => console.error("Lỗi:", err));
+      axios.get('http://localhost:3001/api/categories')
+          .then(res => {
+              setCategoryList(res.data);
+          })
+          .catch(err => console.error("Lỗi:", err));
   }, []);
 
   return (
@@ -72,13 +72,10 @@ function Header() {
             <Link to="/">TRANG CHỦ</Link>
           </li>
           <li className="dropdown">
-            <span className="dropdown-title">THỂ LOẠI</span>
+            <span className="dropdown-title"> THỂ LOẠI</span>
             <div className="dropdown-content">
               {categoryList.map((category) => (
-                <Link
-                  key={category.category_id}
-                  to={`/the-loai/${encodeURIComponent(category.category_name)}`}
-                >
+                <Link key={category.category_id} to={`/the-loai/${encodeURIComponent(category.category_name)}`}>
                   {category.category_name}
                 </Link>
               ))}
@@ -88,7 +85,7 @@ function Header() {
       </div>
       <div className="Search">
         <ul>
-          <li>
+        <li>
             <input
               placeholder="Tìm kiếm"
               type="text"

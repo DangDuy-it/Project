@@ -28,13 +28,41 @@ const addWatchHistory = (req, res) => {
         return res.status(400).json({ message: "Thiếu movie_id" });
     }
 
-    const sql = `INSERT INTO watchhistory (user_id, movie_id, watched_at) VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE watched_at = NOW()`;
-    db.query(sql, [userId, movie_id], (err, result) => {
+    db.beginTransaction((err) => {
         if (err) {
-            console.error("Lỗi thêm lịch sử xem phim:", err.message, err.sqlMessage);
+            console.error("Lỗi bắt đầu transaction:", err.message);
             return res.status(500).json({ message: "Lỗi máy chủ", error: err.message });
         }
-        res.status(201).json({ message: "Đã ghi lịch sử xem phim" });
+
+        const deleteSql = `DELETE FROM watchhistory WHERE user_id = ? AND movie_id = ?`;
+        db.query(deleteSql, [userId, movie_id], (err, deleteResult) => {
+            if (err) {
+                return db.rollback(() => {
+                    console.error("Lỗi xóa lịch sử cũ:", err.message, err.sqlMessage);
+                    return res.status(500).json({ message: "Lỗi máy chủ", error: err.message });
+                });
+            }
+
+            const insertSql = `INSERT INTO watchhistory (user_id, movie_id, watched_at) VALUES (?, ?, NOW())`;
+            db.query(insertSql, [userId, movie_id], (err, insertResult) => {
+                if (err) {
+                    return db.rollback(() => {
+                        console.error("Lỗi thêm lịch sử mới:", err.message, err.sqlMessage);
+                        return res.status(500).json({ message: "Lỗi máy chủ", error: err.message });
+                    });
+                }
+
+                db.commit((err) => {
+                    if (err) {
+                        return db.rollback(() => {
+                            console.error("Lỗi commit transaction:", err.message);
+                            return res.status(500).json({ message: "Lỗi máy chủ", error: err.message });
+                        });
+                    }
+                    res.status(201).json({ message: "Đã ghi lịch sử xem phim" });
+                });
+            });
+        });
     });
 };
 

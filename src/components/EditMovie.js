@@ -14,6 +14,7 @@ function EditMovie() {
         status: '',
         description:'',
         image_url: '',
+        background_url:'',
     });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -33,6 +34,7 @@ function EditMovie() {
                     status: data.status || '',
                     description: data.description || '',
                     image_url: data.image_url || '',
+                    background_url: data.background_url || '',
                 });
                 setLoading(false);
             })
@@ -120,6 +122,10 @@ function EditMovie() {
                     <div className="form-group">
                         <label htmlFor="image_url">URL ảnh:</label>
                         <input type="text" id="image_url" name="image_url" value={movie.image_url} onChange={handleChange} />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="background_url">URL ảnh:</label>
+                        <input type="text" id="background_url" name="background_url" value={movie.background_url} onChange={handleChange} />
                     </div>
                 </div>
             </form>

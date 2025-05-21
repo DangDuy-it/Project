@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'; // Thêm useNavigate
 import '../styles/HeaderAdmin.css';
+import logo_web from "../picture/logo-1.webp";
 
 function HeaderAdmin() {
     const navigate = useNavigate(); // Sử dụng useNavigate để điều hướng
@@ -15,7 +16,9 @@ function HeaderAdmin() {
     return (
         <nav>
             <div className="logo">
-                <img src="https://cdn.animevietsub.one/data/logo/logoz.png" alt="Logo" />
+                <Link to="/">
+                    <img src={logo_web} alt="Logo" className="logo-img" />
+                </Link>
             </div>
             <div className="header">
                 <ul>

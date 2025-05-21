@@ -66,7 +66,7 @@ export default function CategoryMovies() {
           <ul className="movie-grid">
             {movies.map(m => (
               <li key={m.id}>
-                <Link to={`/movie/${m.id}`}>
+                <Link to={`/movieDetail/${m.id}`}>
                   <img src={m.image_url} alt={m.title} />
                   <p>{m.title}</p>
                 </Link>

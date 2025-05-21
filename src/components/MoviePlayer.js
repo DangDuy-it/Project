@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const MoviePlayer = () => {
-    const { id } = useParams();
+    const { id, episodeNumber } = useParams();
     const [movie, setMovie] = useState(null);
     const [currentEpisode, setCurrentEpisode] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -33,8 +33,6 @@ const MoviePlayer = () => {
         }
 
         const token = localStorage.getItem("token");
-        console.log("Gọi recordHistoryToDB với movieId:", movieId, "Token:", token);
-
         if (!token) {
             console.log("Không có token, bỏ qua ghi lịch sử.");
             toast.error("Vui lòng đăng nhập để ghi lịch sử xem phim!");
@@ -65,7 +63,7 @@ const MoviePlayer = () => {
     };
 
     useEffect(() => {
-        console.log("useEffect chạy với id:", id);
+        console.log("useEffect chạy với id:", id, "và episodeNumber:", episodeNumber);
         let isMounted = true;
 
         const fetchMovieData = async () => {
@@ -77,35 +75,27 @@ const MoviePlayer = () => {
                 if (!isMounted) return;
 
                 if (movieData.episodes && Array.isArray(movieData.episodes)) {
-                    // Kiểm tra trùng lặp episode_id
-                    const episodeIds = movieData.episodes.map(ep => ep.episode_id);
-                    const hasDuplicateEpisodes = new Set(episodeIds).size !== episodeIds.length;
-                    if (hasDuplicateEpisodes) {
-                        console.warn("Phát hiện episode_id trùng lặp:", episodeIds);
-                    }
-
                     setMovie(movieData);
-                    if (movieData.episodes.length > 0) {
-                        setCurrentEpisode(movieData.episodes[0]);
-                    } else {
-                        console.log("Không có tập phim nào trong dữ liệu.");
+                    let episodeToPlay = null;
+                    if (episodeNumber) {
+                        episodeToPlay = movieData.episodes.find(
+                            (ep) => Number(ep.episode) === Number(episodeNumber)
+                        );
                     }
+                    if (!episodeToPlay && movieData.episodes.length > 0) {
+                        episodeToPlay = movieData.episodes[0];
+                    }
+                    setCurrentEpisode(episodeToPlay);
                 } else {
                     setMovie({ ...movieData, episodes: [] });
-                    console.log("Dữ liệu episodes không hợp lệ hoặc trống.");
                 }
 
-                console.log("Tự động ghi lịch sử khi vào trang, movie_id:", id);
-                await recordHistoryToDB(id);
+                if (movieData && movieData.title && id && !isHistoryRecorded.current) {
+                    await recordHistoryToDB(id);
+                }
 
                 const reviewsRes = await axios.get(`http://localhost:3001/api/reviews/${id}`);
                 if (isMounted) {
-                    // Kiểm tra trùng lặp review_id
-                    const reviewIds = reviewsRes.data.map(review => review.review_id);
-                    const hasDuplicateReviews = new Set(reviewIds).size !== reviewIds.length;
-                    if (hasDuplicateReviews) {
-                        console.warn("Phát hiện review_id trùng lặp:", reviewIds);
-                    }
                     setReviews(reviewsRes.data);
                 }
             } catch (err) {
@@ -126,7 +116,7 @@ const MoviePlayer = () => {
             isMounted = false;
             isHistoryRecorded.current = false;
         };
-    }, [id]);
+    }, [id, episodeNumber]);
 
     const handleReviewSubmit = async (e) => {
         e.preventDefault();
@@ -149,26 +139,17 @@ const MoviePlayer = () => {
             setReviews(res.data);
             toast.success("Đánh giá thành công!");
         } catch (err) {
-            toast.error(
-                "Lỗi khi gửi đánh giá: " + (err.response?.data?.error || "Thử lại sau")
-            );
+            toast.error("Lỗi khi gửi đánh giá: " + (err.response?.data?.error || "Thử lại sau"));
         }
-    };
-
-    const recordHistory = (title, movieId) => {
-        const history = JSON.parse(localStorage.getItem("watchHistory") || "[]");
-        const newEntry = { id: movieId, title, timestamp: new Date().toISOString() };
-        const updatedHistory = [
-            newEntry,
-            ...history.filter((item) => item.id !== movieId),
-        ].slice(0, 10);
-        localStorage.setItem("watchHistory", JSON.stringify(updatedHistory));
     };
 
     const handleEpisodeClick = (ep) => {
         console.log("handleEpisodeClick được gọi với ep:", ep, "movie_id:", id);
         setCurrentEpisode(ep);
-        recordHistory(movie?.title, id);
+        navigate(`/movie/${id}/episode/${ep.episode}`, { replace: true });
+        if (!isHistoryRecorded.current) {
+            recordHistoryToDB(id);
+        }
     };
 
     if (loading) return <div>Đang tải...</div>;
@@ -177,8 +158,8 @@ const MoviePlayer = () => {
     return (
         <div className="movie-player-container">
             <div className="breadcrumb">
-                <Link to="/">Trang chủ</Link> / <span>{movie.title}</span> /{" "}
-                <span>{currentEpisode?.title}</span>
+                <Link to="/">Trang chủ</Link> / <Link to={`/movie-detail/${id}`}>{movie.title}</Link> /{" "}
+                <span>{currentEpisode?.title || `Tập ${currentEpisode?.episode}`}</span>
             </div>
             <div className="video-player">
                 <iframe
@@ -197,12 +178,8 @@ const MoviePlayer = () => {
                     {Array.isArray(movie.episodes) && movie.episodes.length > 0 ? (
                         movie.episodes.map((ep, index) => (
                             <button
-                                key={`episode-${index}`} // Sử dụng index để đảm bảo key duy nhất
-                                className={
-                                    Number(ep.episode) === Number(currentEpisode?.episode)
-                                        ? "active"
-                                        : ""
-                                }
+                                key={`episode-${index}`}
+                                className={Number(ep.episode) === Number(currentEpisode?.episode) ? "active" : ""}
                                 onClick={() => handleEpisodeClick(ep)}
                             >
                                 Tập {ep.episode}
@@ -227,11 +204,7 @@ const MoviePlayer = () => {
                 <form onSubmit={handleReviewSubmit}>
                     <div className="rating-input">
                         <label>Điểm đánh giá (1-10): </label>
-                        <select
-                            value={rating}
-                            onChange={(e) => setRating(Number(e.target.value))}
-                            required
-                        >
+                        <select value={rating} onChange={(e) => setRating(Number(e.target.value))} required>
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -259,9 +232,8 @@ const MoviePlayer = () => {
                         reviews.map((review, index) => (
                             <div key={`review-${index}`} className="review">
                                 <p>
-                                    <strong>{review.user_name}</strong> (
-                                    {new Date(review.review_date).toLocaleString()}) -
-                                    <span className="rating"> Điểm: {review.rating}/10</span>
+                                    <strong>{review.user_name}</strong> ({new Date(review.review_date).toLocaleString()}) -{" "}
+                                    <span className="rating">Điểm: {review.rating}/10</span>
                                 </p>
                                 <p>{review.comment}</p>
                             </div>

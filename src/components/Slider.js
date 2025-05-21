@@ -48,7 +48,7 @@ const AnimeSlider=() => {
                             <button className="watch-btn" onClick={()=> handleWatchClick(slide.movie_id)}>Xem Phim</button>
                         </div>
                         <div className="slide-background">
-                            <img src={slide.background_url} alt={slide.title} />
+                            <img src={slide.background_url} alt={slide.title} onClick={()=> handleWatchClick(slide.movie_id)} />
                         </div>
                     </div>
                 ))}

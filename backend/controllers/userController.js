@@ -2,7 +2,11 @@ const db = require('../config/db');
 
 // API: Lấy danh sách tài khoản người dùng
 const getUsers = (req, res) => {
-    const sql = 'SELECT user_id, user_name, email, role_id, created_at, TRIM(status) AS status FROM users';
+    const sql = `SELECT user_id, user_name, email, role_id, created_at, TRIM(status) AS status
+                FROM users
+                WHERE role_id=4
+                ORDER BY created_at DESC
+                `;
   
     db.query(sql, (err, results) => {
         if (err) {

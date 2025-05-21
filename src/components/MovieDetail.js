@@ -136,6 +136,9 @@ const MovieDetail = () => {
             .sort((a, b) => Number(b.episode) - Number(a.episode))
             .slice(0, 3)
         : [];
+    const newestEpisode = movie.episodes && movie.episodes.length > 0
+    ? [...movie.episodes].sort((a, b) => Number(b.episode) - Number(a.episode))[0]
+    : null;
 
     return (
         <div className="movie-detail-page">
@@ -146,9 +149,16 @@ const MovieDetail = () => {
                     <div className="movie-detail-poster">
                         <img src={movie.image_url} alt={movie.title} />
                         <div className="movie-button">
-                            <Link to={`/movie/${id}`} className="watch-movie-btn">
-                                XEM PHIM
-                            </Link>
+                            {newestEpisode ? (
+                                <Link to={`/movie/${id}/episode/${newestEpisode.episode}`} className="watch-movie-btn">
+                                    XEM PHIM
+                                </Link>
+                            ) : (
+                                // Nếu không có tập phim nào, hiển thị nút bị vô hiệu hóa hoặc thông báo
+                                <button className="watch-movie-btn disabled" disabled>
+                                    KHÔNG CÓ TẬP NÀO
+                                </button>
+                            )}
                             <button
                                 onClick={toggleFavorite}
                                 className={`favorite-btn ${isFavorite ? "remove" : "add"}`}
@@ -176,13 +186,14 @@ const MovieDetail = () => {
                     <p>Tập mới: </p>
                         {latestEpisodes.length > 0 ? (
                             latestEpisodes.map((ep) => (
-                                <Link
-                                    key={ep.episode_id}
-                                    to={`/movie/${id}`}
-                                    className="episode-button"
-                                >
-                                    Tập {ep.episode}
-                                </Link>
+                        <Link
+                            key={ep.episode_id}
+                            // Thay đổi dòng này: thêm /episode/:episode_number vào URL
+                            to={`/movie/${id}/episode/${ep.episode}`}
+                            className="episode-button"
+                        >
+                            Tập {ep.episode}
+                        </Link>
                             ))
                         ) : (
                             <p>Chưa có tập phim nào.</p>

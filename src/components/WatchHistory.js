@@ -63,7 +63,7 @@ function WatchHistory() {
             ) : (
                 <div className="movie-list">
                     {watchHistory.map(history => (
-                        <Link key={history.movie_id} to={`/movie/${history.movie_id}`} className="movie-card">
+                        <Link key={history.movie_id} to={`/movieDetail/${history.movie_id}`} className="movie-card">
                             <img src={history.image_url} alt={history.title} />
                             <div className="movie-title">{history.title}</div>
                             <div className="watched-at">Xem lúc: {new Date(history.watched_at).toLocaleString()}</div>

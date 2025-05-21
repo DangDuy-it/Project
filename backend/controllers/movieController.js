@@ -98,7 +98,9 @@ const getMovieById = (req, res) => {
         TRIM(genre) AS genre,
         release_year AS release_year,
         duration,
-        description
+        description,
+        background_url
+
     FROM movies 
     WHERE movie_id = ?
     `;
@@ -113,7 +115,7 @@ const getMovieById = (req, res) => {
         }
         const movieData = result[0];
         movieData.image_url = movieData.image_url ? movieData.image_url.replace(/\s+/g, '') : '';
-        movieData.video_url = movieData.video_url ? movieData.video_url.replace(/\s+/g, '') : '';
+        movieData.background_url = movieData.background_url ? movieData.background_url.replace(/\s+/g, '') : '';
 
         res.status(200).json(movieData);
     });
@@ -128,7 +130,8 @@ const updateMovie = (req, res) => {
         duration,
         status,
         description,
-        image_url
+        image_url,
+        background_url
     } = req.body;
 
     const updateMovieSql = `
@@ -140,11 +143,12 @@ const updateMovie = (req, res) => {
             duration=?,
             status=?,
             description=?,
-            image_url=? 
+            image_url=?,
+            background_url=?
         WHERE movie_id=?
     `;
 
-    db.query(updateMovieSql, [title, genre, release_year, duration, status, description, image_url, movieId], (err, result) => {
+    db.query(updateMovieSql, [title, genre, release_year, duration, status, description, image_url, background_url, movieId], (err, result) => {
         if (err) {
             console.error('Lỗi cập nhật phim:', err);
             return res.status(500).json({ message: 'Lỗi máy chủ khi cập nhật phim', error: err.message });
@@ -226,7 +230,7 @@ const addMovie = (req, res) => {
         genre,
         duration,
         status: statusFromRequest, // Lấy giá trị status từ request body
-        background_url // Lấy cả background_url
+        background_url 
     } = req.body;
 
     // >>> Xử lý giá trị mặc định cho status trước khi dùng trong validation/query <<<

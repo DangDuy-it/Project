@@ -75,7 +75,7 @@ function Favorites(){
                 //Nếu không loading và danh sách không rỗng, hiện thị danh sách phim
                 <div className="movie-list">
                     {favoriteMovies.map(movie =>(
-                        <Link key={movie.movie_id} to = {`/movie/${movie.movie_id}`} className="movie-card">
+                        <Link key={movie.movie_id} to = {`/movieDetail/${movie.movie_id}`} className="movie-card">
                             <img src={movie.image_url} alt={movie.title} />
                             <div className="movie-title">{movie.title}</div>
                         </Link>

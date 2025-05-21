@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/Login.css";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -13,8 +13,6 @@ function Profile() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-    const [favorites, setFavorites] = useState([]);
-    const [history, setHistory] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -25,9 +23,6 @@ function Profile() {
             setUserName(parsedUser.user_name);
             setEmail(parsedUser.email);
 
-            // Lấy danh sách yêu thích và lịch sử
-            setFavorites(JSON.parse(localStorage.getItem("favorites") || "[]"));
-            setHistory(JSON.parse(localStorage.getItem("watchHistory") || "[]"));
         } else {
             navigate("/login");
         }
