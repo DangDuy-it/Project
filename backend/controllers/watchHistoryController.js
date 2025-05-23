@@ -66,7 +66,41 @@ const addWatchHistory = (req, res) => {
     });
 };
 
+// API: Xóa một bản ghi lịch sử xem phim
+const deleteWatchHistoryItem = (req, res) => {
+    const userId = req.user.user_id;
+    const { movie_id } = req.params;
+
+    const sql = `DELETE FROM watchhistory WHERE user_id = ? AND movie_id = ?`;
+    db.query(sql, [userId, movie_id], (err, result) => {
+        if (err) {
+            console.error("Lỗi xóa lịch sử xem phim:", err.message, err.sqlMessage);
+            return res.status(500).json({ message: "Lỗi máy chủ", error: err.message });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Không tìm thấy bản ghi lịch sử" });
+        }
+        res.status(200).json({ message: "Đã xóa bản ghi lịch sử xem phim" });
+    });
+};
+
+// API: Xóa toàn bộ lịch sử xem phim
+const deleteAllWatchHistory = (req, res) => {
+    const userId = req.user.user_id;
+
+    const sql = `DELETE FROM watchhistory WHERE user_id = ?`;
+    db.query(sql, [userId], (err, result) => {
+        if (err) {
+            console.error("Lỗi xóa toàn bộ lịch sử xem phim:", err.message, err.sqlMessage);
+            return res.status(500).json({ message: "Lỗi máy chủ", error: err.message });
+        }
+        res.status(200).json({ message: "Đã xóa toàn bộ lịch sử xem phim" });
+    });
+};
+
 module.exports = {
     getWatchHistory,
     addWatchHistory,
+    deleteWatchHistoryItem,
+    deleteAllWatchHistory,
 };

@@ -425,6 +425,40 @@ const searchMovies = (req, res) => {
         res.status(200).json(results);
     });
 };
+const searchMoviesForAdmin= (req, res) =>{
+    const searchTerm=req.query.movieName;
+
+    if (!searchTerm){
+        return res.status(500).json({message:"Vui lòng nhập từ khóa tìm kiếm"});
+    }
+
+    const sql=`SELECT 
+                    m.movie_id,
+                    m.title,
+                    m.image_url,
+                    m.genre,
+                    m.description,
+                    m.duration,
+                    m.release_year,
+                    m.status,
+                    COUNT(e.episode_id) AS episodes
+                FROM movies m
+                LEFT JOIN episodes e ON m.movie_id = e.movie_id
+                WHERE m.title LIKE ? 
+                GROUP BY m.movie_id
+                ORDER BY m.movie_id DESC`;
+    const searchPattern= `%${searchTerm}%`;
+    db.query(sql, [searchPattern],(err, results)=>{
+        if (err){
+            console.error("",err);
+            return res.status(500).json({message:"Lỗi máy chủ."});
+        }
+        if (results.length===0){
+            return res.status(404).json({message:"Không tìm thấy phim phù hợp."});
+        }
+        res.status(200).json(results);
+    });
+}
 
 
 module.exports = {
@@ -438,5 +472,6 @@ module.exports = {
     deleteMovie,
     getSliderMovie,
     searchMovies,
+    searchMoviesForAdmin
 };
 

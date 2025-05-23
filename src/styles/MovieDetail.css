@@ -34,8 +34,8 @@
 }
 
 .movie-detail-poster img {
-    width: 100%;
-    height: auto;
+    width: 190px;
+    height: 270px;
     border-radius: 8px;
 }
 /* Movie Button Container */
