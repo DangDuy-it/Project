@@ -2,13 +2,14 @@ import '../styles/UserDetail.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { useEffect,useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 function UserDetail(){   
     const {userId}= useParams();
     const [user, setUser] = useState(null);
     const [loading, setLoading]= useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     // Hàm lấy thông tin user
     const fetchUser = () => {
@@ -48,7 +49,9 @@ function UserDetail(){
                 return res.json();
             })
             .then((data) => {
-                setUser(data); // cập nhật lại user với dữ liệu mới
+                setUser(data);
+                alert('Cập nhật trạng thái thành công!'); 
+                navigate(-1);
             })
             .catch((err) => {
                 console.error('Lỗi cập nhật trạng thái:', err);
@@ -85,7 +88,7 @@ function UserDetail(){
                 </ul>
             </div>
             <div className="actions">
-                <button className='ban' onClick={()=> updateStatus('Banned')} disabled={!isActive}>Banned</button>
+                <button className='ban' onClick={()=> updateStatus('Banned')}  disabled={!isActive}>Banned</button>
                 <button className='active' onClick={()=> updateStatus('Active')} disabled={isActive}>Active</button>
             </div>
 

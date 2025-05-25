@@ -1,0 +1,89 @@
+/* Style cho div chính chứa toàn bộ nội dung trang thể loại */
+.category-page {
+    padding: 20px; /* Thêm padding xung quanh nội dung */
+    max-width: 1200px; /* Giới hạn chiều rộng tối đa */
+    margin: 0 auto; /* Căn giữa khối nội dung */
+    color: white; /* Màu chữ mặc định cho trang */
+    min-height: 100vh;
+}
+
+/* Style cho tiêu đề thể loại (ví dụ: Thể loại: Hài hước) */
+.category-page h2 {
+    text-align: left; 
+    width: fit-content;
+    padding: 10px 20px;
+    font-size: 1.2em;
+    border-radius: 10px;
+    background-color: brown;
+    margin-bottom: 30px; /* Khoảng cách dưới tiêu đề */
+    color: white; /* Màu tiêu đề */
+}
+
+/* Style cho ul chứa danh sách phim (class="movie-grid") */
+.movie-grid {
+    display: grid; /* Sử dụng Grid Layout */
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px; /* Khoảng cách giữa các item trong grid */
+    padding: 0; /* Xóa padding mặc định của ul */
+    list-style: none; /* Xóa bullet point mặc định của li */
+    margin: 0; /* Xóa margin mặc định của ul */
+}
+
+/* Style cho từng item phim (li) */
+.movie-grid li {
+    /* Các style cho mỗi card phim nếu cần, ví dụ: border, box-shadow */
+    background-color: #333; /* Màu nền cho mỗi item phim */
+    border-radius: 8px; /* Bo tròn góc */
+    overflow: hidden; /* Đảm bảo ảnh không tràn ra ngoài */
+    display: flex; /* Sử dụng Flexbox cho nội dung bên trong li */
+    flex-direction: column; /* Sắp xếp nội dung theo cột */
+    text-align: center; /* Căn giữa chữ (tên phim) */
+    transition: transform 0.3s ease; /* Thêm hiệu ứng chuyển động khi hover */
+    cursor: pointer; /* Đổi con trỏ chuột thành pointer */
+}
+
+/* Hiệu ứng khi di chuột qua item phim */
+.movie-grid li:hover {
+    transform: scale(1.05); /* Phóng to nhẹ item */
+}
+
+/* Style cho link bao quanh ảnh và tên phim (Link component) */
+.movie-grid li a {
+    text-decoration: none; /* Xóa gạch chân mặc định của link */
+    color: white; /* Màu chữ cho tên phim */
+    display: flex; /* Sử dụng flexbox cho link */
+    flex-direction: column; /* Sắp xếp ảnh và tên phim theo cột */
+    height: 100%; /* Chiều cao đầy đủ của li */
+}
+
+/* Style cho vùng chứa ảnh (không có class riêng, nhắm mục tiêu img trong li) */
+.movie-grid li img {
+    width: 100%; /* Ảnh chiếm toàn bộ chiều rộng của item li */
+    height: 250px; /* Chiều cao cố định cho ảnh (tương tự .anime-image) */
+    object-fit: cover; /* Đảm bảo ảnh không bị méo khi crop */
+    border-top-left-radius: 8px; /* Bo tròn góc trên bên trái ảnh */
+    border-top-right-radius: 8px; /* Bo tròn góc trên bên phải ảnh */
+    /* border-radius: 5px; /* Nếu muốn bo tròn toàn bộ ảnh */
+}
+
+/* Style cho tên phim (p tag bên trong link) */
+.movie-grid li p {
+    margin-top: 8px; /* Khoảng cách trên tên phim */
+    margin-bottom: 8px; /* Khoảng cách dưới tên phim */
+    padding: 0 5px; /* Padding hai bên tên phim */
+    font-size: 0.9em; /* Cỡ chữ nhỏ hơn một chút */
+    font-weight: bold; /* Chữ đậm */
+    /* Giới hạn số dòng tên phim nếu quá dài */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Giới hạn 2 dòng */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.category-page > p {
+    text-align: center; /* Căn giữa thông báo */
+    margin-top: 20px; /* Khoảng cách trên thông báo */
+    font-size: 1.2em; /* Cỡ chữ lớn hơn */
+    font-weight: bold; /* Chữ đậm */
+}

@@ -16,31 +16,31 @@ function ListUser() {
       <div className="list-user-tag">
         <li>Quản lý tài khoản</li>
       </div>
-      {/* Header row */}
-      <div className="user-item header">
-        <div className="name"><li>Tên</li></div>
-        <div className="email"><li>Email</li></div>
-        <div className="role"><li>Role</li></div>
-        <div className="status"><li>Trạng thái</li></div>
-      </div>
+        {/* Header row */}
+        <div className="user-item header">
+          <div className="name"><li>Tên</li></div>
+          <div className="email"><li>Email</li></div>
+          <div className="role"><li>Role</li></div>
+          <div className="status"><li>Trạng thái</li></div>
+        </div>
 
-      {/* User list */}
-      <div className="list-user">
-        {users.map((user) => (
-          <Link
-            to={`/admin/user/${user.user_id}`}
-            key={user.user_id}
-            className='nav-link'
-            >
-            <ListItem
-              userName={user.user_name}
-              email={user.email}
-              role={user.role_id === 1 ? 'Admin' : 'User'}
-              status={user.status}
-            />
-          </Link>
-        ))}
-      </div>
+        {/* User list */}
+        <div className="list-user">
+          {users.map((user) => (
+            <Link
+              to={`/admin/user/${user.user_id}`}
+              key={user.user_id}
+              className='nav-link'
+              >
+              <ListItem
+                userName={user.user_name}
+                email={user.email}
+                role={user.role_id === 1 ? 'Admin' : 'User'}
+                status={user.status}
+              />
+            </Link>
+          ))}
+        </div>
     </div>
   );
 }

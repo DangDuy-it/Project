@@ -1,18 +1,17 @@
 import React from 'react';
 import '../../styles/Home.css'; 
 import Notification from '../../components/Notification';
-import CategoryMovies from '../../components/CategoryMovies';
+import WatchHistory from '../../components/WatchHistory';
 
-
-function TheLoai(){
-    return(
+function WatchHistoryList() {
+    return (
         <div>
             <div className="content">
                 <Notification />
-                <CategoryMovies />
+                <WatchHistory />
             </div>
         </div>
     );
 }
 
-export default TheLoai;
+export default WatchHistoryList;

@@ -1,0 +1,107 @@
+.watch-history-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    color: white;
+    min-height: 100vh;
+}
+
+.no-history {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.watch-history-container h2 {
+    margin: 0;
+    font-size: 1.2em;
+    width: fit-content;
+    background-color: brown;
+    padding: 10px 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.watched-at {
+    font-size: 0.9em;
+    color: #ccc;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.movie-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start; /* Căn trái danh sách phim */
+}
+
+.movie-card-wrapper {
+    position: relative;
+    width: 200px;
+}
+
+.movie-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    width: 200px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+.movie-card:hover {
+    transform: scale(1.05);
+}
+
+.movie-card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.movie-title {
+    padding: 10px;
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
+}
+
+.delete-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s;
+}
+
+.delete-button:hover {
+    background-color: #cc0000;
+}
+
+.delete-all-button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s;
+}
+
+.delete-all-button:hover {
+    background-color: #cc0000;
+}

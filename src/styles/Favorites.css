@@ -1,0 +1,21 @@
+
+.favorite-movies-container{
+    padding: 20px; /* Khoảng cách padding xung quanh nội dung */
+    max-width: 1200px; /* Giới hạn chiều rộng tối đa */
+    margin: 0 auto; /* Căn giữa khối nội dung */
+    color: white; /* Màu chữ mặc định */
+    min-height: 100vh;
+}
+.no-favorites{
+    font-weight: bold;
+    font-size: 1.2em;
+}
+.favorite-movies-container h2{
+    margin: 0; /* Xóa margin mặc định của h2 */
+    font-size: 1.2em; /* Cỡ chữ tiêu đề */
+    width: fit-content;
+    background-color: brown;
+    padding: 10px 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}

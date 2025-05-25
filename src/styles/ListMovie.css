@@ -119,3 +119,11 @@
     margin: auto;
     align-items: center;
 }
+.button-add button:hover{
+    background-color: #888
+}
+.No {
+    color: rgb(174, 9, 9);
+    font-weight: bold;
+    font-size: 1.2em;
+}

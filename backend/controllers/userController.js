@@ -2,7 +2,11 @@ const db = require('../config/db');
 
 // API: Lấy danh sách tài khoản người dùng
 const getUsers = (req, res) => {
-    const sql = 'SELECT user_id, user_name, email, role_id, created_at, TRIM(status) AS status FROM users';
+    const sql = `SELECT user_id, user_name, email, role_id, created_at, TRIM(status) AS status
+                FROM users
+                WHERE role_id=4
+                ORDER BY created_at DESC
+                `;
   
     db.query(sql, (err, results) => {
         if (err) {
@@ -59,9 +63,37 @@ const updateUserStatus = (req, res) => {
         });
     });
 };
+const searchUsers= (req, res)=>{
+    const searchTerm= req.query.userName;
+    if (!searchTerm){
+        return res.status(400).json({message:"Vui lòng cung cấp từ khóa tìm kiếm"})
+    }
+    const sql=`SELECT user_id,
+                    user_name,
+                    email,
+                    role_id,
+                    created_at,
+                    TRIM(status) as status
+                FROM users
+                WHERE role_id=4 AND user_name LIKE ?
+                ORDER BY created_at DESC`;
+    const searchPattern = `%${searchTerm}%`;
+    db.query(sql, [searchPattern], (err,results) =>{
+        if (err){
+            console.error('Lỗi tìm kiếm người dùng:', err);
+            return res.status(500).json({message:"Lỗi máy chủ."});
+        }
+        if (results.length===0){
+            return res.status(404).json({message:"Không tìm thấy người dùng phù hợp."});
+        }
+        res.status(200).json(results);
+    });
+    
+}
 
 module.exports = {
     getUsers,
     getUserById,
-    updateUserStatus
+    updateUserStatus,
+    searchUsers
 };

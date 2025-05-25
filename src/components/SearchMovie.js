@@ -1,31 +1,52 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from "axios";
+import { useLocation,Link } from "react-router-dom";
 import '../styles/ListMovie.css';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from "react";
 
-function AdminList() {
-    const [animeList, setAnimeList] = useState([]);
 
-    useEffect(() => {
-        axios.get('http://localhost:3001/api/moviesad')
-            .then(res => {
-                setAnimeList(res.data);
+function useQuery(){
+    return new URLSearchParams(useLocation().search);
+}
+
+function SearchMovie(){
+    const query= useQuery();
+    const movieName= query.get('movieName');
+
+    const [movies, setMovies]= useState([]);
+    const [loading, setLoading]= useState(true);
+
+    useEffect(()=>{
+        if(!movieName){
+            setMovies([]);
+            setLoading(false);
+            return;
+        }
+        setLoading(true);
+        axios.get(`http://localhost:3001/api/movies/searchAdmin?movieName=${encodeURIComponent(movieName.trim())}`)
+            .then((response)=>{
+                setMovies(response.data);
+                setLoading(false);
             })
-            .catch(err => console.error("Lỗi:", err));
-    }, []);
+            .catch((err)=>{
+                console.log("Lỗi khi tìm kiếm phim",err);
+                setMovies([]);
+                setLoading(false);
+            })
+    },[movieName]);
 
-    return (
+    if(loading){
+        return <div>Đang tải kết quả tìm kiếm</div>
+    }
+
+    return(
         <div className="list-movies">
             <div className="list-movie-tag">
-                <li>Quản lý phim</li>
+                <li>Kết quả tìm kiếm cho: "{movieName}</li>
             </div>
-            <div className="button-add">
-                <Link to={`/admin/add`}>
-                    <button>THÊM PHIM</button>
-                </Link>
-            </div>
-            <div className="list-movie">
-                {animeList.map((item) => (
+            {movies.length>0 ?(
+                <>
+                <div className="list-movie">
+                {movies.map((item) => (
                     <AnimeItem
                         key={item.movie_id}
                         movie_id={item.movie_id}
@@ -38,9 +59,14 @@ function AdminList() {
                         status={item.status}
                     />
                 ))}
-            </div>
+                </div>    
+                </>
+            ):(
+                <p className="No">Không tìm thấy phim </p>
+            )}
+            
         </div>
-    );
+    )
 }
 
 function AnimeItem({movie_id, title, image_url, genre, year, duration, episodes, status }) {
@@ -51,7 +77,7 @@ function AnimeItem({movie_id, title, image_url, genre, year, duration, episodes,
         return 'review';
     };
     //
-    const handleDelete = (id) => {
+    const handleDelete = (movie_id) => {
         if (window.confirm("Bạn có chắc muốn xóa phim này không?")) {
             axios.delete(`http://localhost:3001/api/movies/${movie_id}`)
                 .then(() => {
@@ -81,7 +107,7 @@ function AnimeItem({movie_id, title, image_url, genre, year, duration, episodes,
                 <p><strong>Thể loại:</strong> {genre}</p>
                 <p><strong>Năm phát hành:</strong> {year}</p>
                 <p><strong>Thời lượng:</strong> {duration} phút</p>
-                {episodes && <p><strong>Số tập:</strong> {episodes} ( Đang cập nhật )</p>}
+                {<p><strong>Số tập:</strong> episodes &&  {episodes} ( Đang cập nhật )</p>}
                 <div className={`status ${getStatusClass()}`}>
                     <span className="dot" />
                     Trạng thái: {status}
@@ -98,4 +124,4 @@ function AnimeItem({movie_id, title, image_url, genre, year, duration, episodes,
     );
 }
 
-export default AdminList;
+export default SearchMovie;

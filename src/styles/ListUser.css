@@ -71,3 +71,8 @@ li {
     list-style: none;
 }
 
+.list-users p{
+    color: rgb(174, 9, 9);
+    font-weight: bold;
+    font-size: 1.2em;
+}
