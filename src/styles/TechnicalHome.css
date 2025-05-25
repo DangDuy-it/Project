@@ -1,0 +1,72 @@
+.table-section-container {
+  background-color: #121212;
+  color: #f5f6fa;
+  padding: 20px;
+}
+
+.team-title h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.table-header h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solidrgb(0, 0, 0);
+}
+
+th {
+  background-color: #1e1e1e;
+  font-weight: bold;
+  text-align: center;
+}
+
+tbody tr {
+  background-color: #121212;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #1e1e1e;
+}
+
+tbody td.align-center {
+  text-align: center; 
+}
+
+td:nth-child(4) {
+  font-weight: bold;
+}
+
+td:nth-child(4).da-phan-hoi {
+  color: #4caf50;
+}
+
+td:nth-child(4).chua-phan-hoi {
+  color: #f44336;
+}
+
+.view-button-styled {
+  font-style: italic;
+  color: lightskyblue;
+  background: none;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-weight: bold;
+  font-size: 16px;
+}
