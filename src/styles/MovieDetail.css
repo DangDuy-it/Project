@@ -110,6 +110,7 @@
 .movie-description {
     font-size: 1rem;
     line-height: 1.5;
+    min-height: 210px;
     margin-bottom: 15px;
     color: #ccc;
 }
@@ -153,6 +154,9 @@
 }
 
 .movie-details-list strong {
+    color: white;
+}
+.movie-details-list p span{
     color: white;
 }
 

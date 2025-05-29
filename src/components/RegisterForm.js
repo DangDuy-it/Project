@@ -49,7 +49,7 @@ function RegisterForm() {
             // Gửi sự kiện để thông báo rằng user đã thay đổi
             window.dispatchEvent(new Event("userChanged"));
             setTimeout(() => {
-                navigate("/login");
+                navigate("/");
             }, 2000);
         } catch (err) {
             console.error("Lỗi khi đăng ký:", err);

@@ -78,16 +78,16 @@ function Profile() {
                     type="text"
                     placeholder="Nhập tên người dùng"
                     value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
                     required
+                    disabled
                 />
                 <label>Email</label>
                 <input
                     type="email"
                     placeholder="Nhập email của bạn"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                     required
+                    disabled
                 />
                 <label>Mật khẩu mới (để trống nếu không muốn thay đổi)</label>
                 <input

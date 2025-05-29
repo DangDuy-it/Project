@@ -10,7 +10,6 @@ const MovieDetail = () => {
     const [movie, setMovie] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isFavorite, setIsFavorite] = useState(false);
-    const [activeTab, setActiveTab] = useState("info");
     const [reviews, setReviews] = useState([]);
     const [newComment, setNewComment] = useState("");
     const [rating, setRating] = useState(10);
@@ -29,6 +28,7 @@ const MovieDetail = () => {
     useEffect(() => {
         const fetchMovieData = async () => {
             try {
+
                 const movieRes = await fetch(`http://localhost:3001/api/movies/${id}`);
                 const movieData = await movieRes.json();
 
@@ -37,7 +37,7 @@ const MovieDetail = () => {
                 } else {
                     setMovie(null);
                 }
-                                // 2. Fetch Đánh giá phim
+                // 2. Fetch Đánh giá phim
                 // Gọi API backend để lấy danh sách đánh giá
                 const reviewsRes = await axios.get(`http://localhost:3001/api/reviews/${id}`);
                 setReviews(reviewsRes.data); // Cập nhật state reviews
@@ -173,6 +173,7 @@ const MovieDetail = () => {
                         <div className="movie-details-list">
                             <p><strong>Thời lượng:</strong> {movie.duration}</p>
                             <p><strong>Thể loại:</strong> {movie.genre}</p>
+                            <p><strong>Đánh giá:</strong><span> {movie.avg_rating}</span>/10 từ ({movie.total_reviews} đánh giá) </p>
                         </div>
                     </div>
                 </div>
@@ -181,7 +182,6 @@ const MovieDetail = () => {
 
             {/* Tab Content */}
                 <div className="movie-content">
-                    <h2>Thông tin phim</h2>
                     <div className="episode-list">
                     <p>Tập mới: </p>
                         {latestEpisodes.length > 0 ? (

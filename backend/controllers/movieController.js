@@ -24,17 +24,19 @@ const getMovieDetails = (req, res) => {
 
     const movieQuery = `
         SELECT 
-            movie_id AS id,
-            title,
-            description,
-            release_year,
-            genre,
-            duration,
-            image_url,
-            background_url,
-            status
-        FROM movies
-        WHERE movie_id = ? AND status = 'Approved'
+            m.movie_id,
+            m.title,
+            m.description,
+            m.release_year,
+            m.genre,
+            m.duration,
+            m.image_url,
+            m.background_url,
+            m.status,
+            (SELECT AVG(r.rating) FROM reviews r WHERE r.movie_id=m.movie_id) AS avg_rating,
+            (SELECT COUNT(r.review_id) FROM reviews r WHERE r.movie_id=m.movie_id) AS total_reviews
+        FROM movies m
+        WHERE m.movie_id = ? AND m.status = 'Approved'
     `;
 
     const episodeQuery = `
@@ -55,6 +57,13 @@ const getMovieDetails = (req, res) => {
 
         const movie = movieResult[0];
 
+        // Format avg_rating nếu có
+        if (movie.avg_rating !== null) {
+            movie.avg_rating = parseFloat(movie.avg_rating).toFixed(1);
+        }else{
+            movie.avg_rating="10"
+        }
+        
         db.query(episodeQuery, [movieId], (err, episodeResults) => {
             if (err) return res.status(500).json({ error: err.message });
 
@@ -383,9 +392,9 @@ const getSliderMovie = (req, res) =>{
             genre,
             description
         FROM movies
-        WHERE status = 'Approved' -- Chỉ lấy phim đã duyệt
-        ORDER BY movie_id DESC -- Sắp xếp theo ID phim giảm dần
-        LIMIT 3 -- Giới hạn 3 phim cho slider
+        WHERE status = 'Approved' 
+        ORDER BY movie_id DESC 
+        LIMIT 3 
     `;
     db.query(query,(err,result)=>{
         if(err){

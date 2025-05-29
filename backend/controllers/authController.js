@@ -90,6 +90,11 @@ const login = (req, res) => {
 
 // API: Cập nhật thông tin người dùng (yêu cầu đăng nhập)
 const updateUser = async (req, res) => {
+    // Kiểm tra xem req.user có tồn tại không
+    if (!req.user || !req.user.user_id) {
+        return res.status(401).json({ error: 'Không thể xác thực người dùng, vui lòng đăng nhập lại' });
+    }
+
     const { user_name, email, password } = req.body;
     const user_id = req.user.user_id;
 
