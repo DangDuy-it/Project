@@ -243,21 +243,31 @@ const addMovie = (req, res) => {
         title,
         description,
         release_year, 
-        image_url,
         genre,
         duration,
-        status: statusFromRequest, // Lấy giá trị status từ request body
-        background_url 
+        status: statusFromRequest, 
     } = req.body;
 
     // >>> Xử lý giá trị mặc định cho status trước khi dùng trong validation/query <<<
     const finalStatus = statusFromRequest || 'Pending';
 
     // Basic validation
-    if (!title || !description || !release_year || !duration || !image_url || !genre || !finalStatus || !background_url) {
+    if (!title || !description || !release_year || !duration || !genre || !finalStatus) {
         console.warn('Yêu cầu thêm phim thiếu thông tin bắt buộc:', req.body);
         return res.status(400).json({ error: 'Thiếu thông tin phim bắt buộc (title, description, year, duration, image_url, genre, status).' });
     }
+    // Xử lý file ảnh từ req.files (do upload.fields middleware đưa vào)
+    const imageFile = req.files?.image?.[0];
+    const backgroundFile = req.files?.background?.[0];
+
+    // Kiểm tra file ảnh
+    if (!imageFile || !backgroundFile) {
+        return res.status(400).json({ error: 'Thiếu ảnh phim hoặc ảnh nền.' });
+    }
+
+    // Lưu đường dẫn vào DB (dùng path tương đối tới public/images)
+    const image_url = `/images/${imageFile.filename}`;
+    const background_url = `/images/${backgroundFile.filename}`;
     const sql = `
         INSERT INTO movies (title, description, release_year, duration, image_url, genre, status, background_url)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)

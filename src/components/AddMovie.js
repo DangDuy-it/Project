@@ -17,59 +17,57 @@ function AddMovie(){
 
     const navigate= useNavigate();
     // Hàm xử lý thay đổi giá trị của input
-    const handleInputChange = (e) =>{
-        const {name, value} = e.target;
-    
-        setFormData({...formData,[name]:value});
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    const handleFileChange = (e) => {
+        const { name, files } = e.target;
+        setFormData({ ...formData, [name]: files[0] });  // Lưu file (1 file duy nhất)
     };
     // Hàm xử lý khi form được submit 
-    const handleSubmit = (e) =>{
+    const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Chuẩn bị dữ liệu gửi đi 
-        const dataToSend = {
-            title: formData.title,
-            description: formData.description,
-            release_year:parseInt(formData.release_year, 10),
-            duration: parseInt(formData.duration, 10),
-            genre: formData.genre,
-            image_url: formData.image_url,
-            background_url: formData.background_url,
-            status: formData.status
-        };
-        if (!dataToSend.title || !dataToSend.description || !dataToSend.release_year || !dataToSend.duration || !dataToSend.genre || !dataToSend.image_url || !dataToSend.background_url) {
-            alert('Vui lòng điền đầy đủ các thông tin bắt buộc!');
-            return; // Dừng hàm nếu validation thất bại
-        }
-        // Kiểm tra year và duration có phải số không nếu bạn muốn
-        if (isNaN(dataToSend.release_year) || isNaN(dataToSend.duration)) {
-            alert('Năm phát hành và Thời lượng phải là số!');
+        // Kiểm tra dữ liệu bắt buộc
+        if (
+            !formData.title || !formData.description || !formData.release_year ||
+            !formData.duration || !formData.genre || !formData.image || !formData.background
+        ) {
+            alert("Vui lòng điền đầy đủ thông tin và chọn ảnh!");
             return;
-       }
-       // >>> Gửi request POST lên API backend sử dụng .then().catch() <<<
-       axios.post('http://localhost:3001/api/movies/add', dataToSend)
-       .then(response => {
-           // Xử lý kết quả thành công ở đây
-           if (response.status === 201) {
-               alert("Thêm phim thành công!");
-               navigate('/managemovie'); // Điều hướng về trang danh sách admin
-           } else {
-               // Xử lý các mã trạng thái thành công khác
-               alert("Thêm phim thành công (API trả về trạng thái khác 201)!");
-               navigate('/managemovie');
-           }
-       })
-       .catch(error => {
-           // Xử lý lỗi ở đây
-           console.error("Lỗi khi thêm phim:", error);
-            // Hiển thị thông báo lỗi từ server nếu có
-            if (error.response && error.response.data && error.response.data.error) {
-                alert(`Thêm phim thất bại: ${error.response.data.error}`);
-            } else {
-                alert("Thêm phim thất bại. Vui lòng thử lại.");
-            }
-       });
-    }
+        }
+
+        const formPayload = new FormData();
+        formPayload.append("title", formData.title);
+        formPayload.append("genre", formData.genre);
+        formPayload.append("release_year", parseInt(formData.release_year));
+        formPayload.append("duration", parseInt(formData.duration));
+        formPayload.append("description", formData.description);
+        formPayload.append("status", formData.status);
+        formPayload.append("image", formData.image);             // tên trùng tên field trong backend
+        formPayload.append("background", formData.background);   // tên trùng tên field trong backend
+
+        axios
+            .post("http://localhost:3001/api/movies/add", formPayload, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            })
+            .then((response) => {
+                alert("Thêm phim thành công!");
+                navigate(-1);
+            })
+            .catch((error) => {
+                console.error("Lỗi khi thêm phim:", error);
+                if (error.response?.data?.error) {
+                    alert(`Thêm phim thất bại: ${error.response.data.error}`);
+                } else {
+                    alert("Thêm phim thất bại. Vui lòng thử lại.");
+                }
+            });
+    };
     return (
         <div className="add-movie-container">
             <h2>Thêm Thông Tin Phim</h2>
@@ -131,28 +129,28 @@ function AddMovie(){
                     ></textarea>
                 </div>
                 <div className="form-group">
-                    <label>Image URL (Poster):</label>
+                    <label>Poster (Ảnh phim):</label>
                     <input
-                        type="text"
-                        id="image_url"
-                        name="image_url"
-                        value={formData.image_url}
-                        onChange={handleInputChange}
+                        type="file"
+                        name="image"
+                        accept="image/*"
+                        onChange={handleFileChange}
                         required
                     />
                 </div>
-                 <div className="form-group">
-                    <label>Background URL:</label>
+
+                <div className="form-group">
+                    <label>Ảnh nền (Background):</label>
                     <input
-                        type="text"
-                        id="background_url"
-                        name="background_url"
-                        value={formData.background_url}
-                        onChange={handleInputChange}
+                        type="file"
+                        name="background"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        required
                     />
                 </div>
                 <div className="button-container">
-                    <button type="submit" className="submit-button">Thêm Tập</button>
+                    <button type="submit" className="submit-button">Thêm Phim</button>
                     <button type="button" onClick={() => navigate(-1)} className="cancel-button">Hủy</button>
                 </div>
             </form>

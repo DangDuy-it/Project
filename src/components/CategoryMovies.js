@@ -7,7 +7,8 @@ import '../styles/CategoryMovies.css';
 export default function CategoryMovies() {
   const { name } = useParams();
   const categoryName = decodeURIComponent(name);
-
+  const [currentPage, setCurrentPage]= useState(1);
+  const moviesPerPage= 10;
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true); // Thêm state loading, mặc định là true khi mới vào trang
   const [error, setError] = useState(null);   // Thêm state error, mặc định là null
@@ -52,7 +53,16 @@ export default function CategoryMovies() {
       });
 
   }, [categoryName]); // Effect chạy lại khi categoryName thay đổi
+  // Tính tổng số trang
+  const totalPages= Math.ceil(movies.length/moviesPerPage);
+  // Tính danh sách phim hiện thị theo trang 
+  const indexOfLastMovie= currentPage * moviesPerPage;
+  const indexOfFirstMovie= indexOfLastMovie - moviesPerPage;
+  const currentMovies= movies.slice(indexOfFirstMovie, indexOfLastMovie);
 
+  const handlePageChange= (pageNumber) =>{
+      setCurrentPage(pageNumber);
+  }
   return (
     <div className="category-page">
       <h2>Thể loại: {categoryName}</h2>
@@ -64,7 +74,7 @@ export default function CategoryMovies() {
       {!loading && !error && ( // Chỉ hiển thị nội dung này khi không tải và không có lỗi
         movies.length > 0 ? ( // Kiểm tra xem có phim hay không
           <ul className="movie-grid">
-            {movies.map(m => (
+            {currentMovies.map(m => (
               <li key={m.id}>
                 <Link to={`/movieDetail/${m.id}`}>
                   <img src={m.image_url} alt={m.title} />
@@ -78,6 +88,19 @@ export default function CategoryMovies() {
           <p>Chưa có phim nào trong thể loại này.</p>
         )
       )}
+      <div className="more">
+          <ul>
+              {Array.from({length: totalPages}, (_, index) =>(
+                  <li key={index}>
+                      <button className={`page-button ${currentPage === index +1 ? 'active' :''}`} 
+                          onClick={()=> handlePageChange(index+1)}
+                          >
+                          {index+1}
+                      </button>
+                  </li>
+              ))}
+          </ul>
+      </div>
     </div>
   );
 }

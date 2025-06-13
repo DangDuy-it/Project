@@ -31,21 +31,21 @@
 
 /* Container cho danh sách các movie card (ul class="movie-list") */
 /* CHUYỂN TỪ FLEXBOX SANG GRID */
-.movie-list {
+.movie-list-search {
     display: grid; /* SỬ DỤNG GRID LAYOUT */
     /* Tạo các cột tự động, mỗi cột rộng ít nhất 160px và lấp đầy phần còn lại */
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 20px; /* Khoảng cách giữa các movie-card (giữ nguyên 20px như bạn cung cấp) */
     list-style: none; /* Xóa dấu đầu dòng mặc định của ul */
     padding: 0; /* Xóa padding mặc định của ul */
-    margin: 0 auto; /* Căn giữa khối grid */
+    margin: 0 ; /* Căn giữa khối grid */
     /* flex-wrap: wrap; <- Không cần trong Grid */
     /* justify-content: center; <- Không cần trong Grid cho mục đích căn giữa item */
 }
 
 /* Style cho từng movie card (li class="movie-card") */
 /* Giữ nguyên các style bên trong card */
-.movie-card {
+.movie-card-search {
     width: 100%; /* Mỗi card chiếm toàn bộ chiều rộng của ô grid */
     text-align: center; /* Căn giữa nội dung bên trong card */
     transition: transform 0.2s ease; /* Hiệu ứng zoom khi hover */
@@ -60,7 +60,7 @@
 }
 
 /* Đảm bảo link bên trong card không bị định kiểu lạ */
-.movie-card a {
+.movie-card-search a {
      text-decoration: none; /* Xóa gạch chân link */
      color: inherit; /* Kế thừa màu chữ */
      display: flex; /* Sử dụng flexbox */
@@ -71,13 +71,13 @@
 
 /* Hiệu ứng khi di chuột qua card */
 /* Giữ nguyên */
-.movie-card:hover {
+.movie-card-search:hover {
     transform: scale(1.05); /* Phóng to card khi di chuột qua */
 }
 
 /* Style cho ảnh trong card */
 /* Giữ nguyên */
-.movie-card img {
+.movie-card-search img {
     width: 100%; /* Chiều rộng ảnh bằng 100% container */
     height: 250px; /* Chiều cao cố định cho ảnh */
     border-radius: 8px; /* Bo tròn góc ảnh */

@@ -9,7 +9,8 @@ function Favorites(){
     const [favoriteMovies, setFavoriteMovies]= useState([]);
     const [loading, setLoading]= useState(true);
     const navigate= useNavigate();
-    
+    const [currentPage, setCurrentPage]= useState(1);
+    const moviesPerPage= 10;
 
     useEffect(()=>{
         // Hàm xử lý lỗi token
@@ -58,7 +59,17 @@ function Favorites(){
         };
         fetchFavoriteMovies();
     },[navigate]);
-    
+    // Tính tổng số trang
+    const totalPages= Math.ceil(favoriteMovies.length/moviesPerPage);
+    // Tính danh sách phim hiện thị theo trang 
+    const indexOfLastMovie= currentPage * moviesPerPage;
+    const indexOfFirstMovie= indexOfLastMovie - moviesPerPage;
+    const currentMovies= favoriteMovies.slice(indexOfFirstMovie, indexOfLastMovie);
+
+    const handlePageChange= (pageNumber) =>{
+        setCurrentPage(pageNumber);
+    }
+
     if(loading){
         return <div>Đang tải danh sách phim yêu thích...</div>
     }
@@ -73,15 +84,28 @@ function Favorites(){
                 ):null // Nếu chưa đăng nhập, hiện thị thông báo trên
             ):(
                 //Nếu không loading và danh sách không rỗng, hiện thị danh sách phim
-                <div className="movie-list">
-                    {favoriteMovies.map(movie =>(
-                        <Link key={movie.movie_id} to = {`/movieDetail/${movie.movie_id}`} className="movie-card">
+                <div className="movie-list-favorites">
+                    {currentMovies.map(movie =>(
+                        <Link key={movie.movie_id} to = {`/movieDetail/${movie.movie_id}`} className="movie-card-favorites">
                             <img src={movie.image_url} alt={movie.title} />
                             <div className="movie-title">{movie.title}</div>
                         </Link>
                     ))}
                 </div>
             )}
+            <div className="more">
+                <ul>
+                    {Array.from({length: totalPages}, (_, index) =>(
+                        <li key={index}>
+                            <button className={`page-button ${currentPage === index +1 ? 'active' :''}`} 
+                                onClick={()=> handlePageChange(index+1)}
+                                >
+                                {index+1}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
     )
 }

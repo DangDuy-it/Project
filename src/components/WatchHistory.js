@@ -7,6 +7,8 @@ import '../styles/WatchHistory.css';
 function WatchHistory() {
     const [watchHistory, setWatchHistory] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage]= useState(1);
+    const moviesPerPage= 10;
     const navigate = useNavigate();
 
     // Hàm xử lý lỗi token
@@ -97,6 +99,16 @@ function WatchHistory() {
             }
         }
     };
+    // Tính tổng số trang
+    const totalPages= Math.ceil(watchHistory.length/moviesPerPage);
+    // Tính danh sách phim hiện thị theo trang 
+    const indexOfLastMovie= currentPage * moviesPerPage;
+    const indexOfFirstMovie= indexOfLastMovie - moviesPerPage;
+    const currentMovies= watchHistory.slice(indexOfFirstMovie, indexOfLastMovie);
+
+    const handlePageChange= (pageNumber) =>{
+        setCurrentPage(pageNumber);
+    }
 
     if (loading) {
         return <div>Đang tải lịch sử xem phim...</div>;
@@ -117,10 +129,10 @@ function WatchHistory() {
                     <div className="no-history">Bạn chưa xem phim nào</div>
                 ) : null
             ) : (
-                <div className="movie-list">
-                    {watchHistory.map(history => (
+                <div className="movie-list-history">
+                    {currentMovies.map(history => (
                         <div key={history.movie_id} className="movie-card-wrapper">
-                            <Link to={`/movieDetail/${history.movie_id}`} className="movie-card">
+                            <Link to={`/movieDetail/${history.movie_id}`} className="movie-card-history">
                                 <img src={history.image_url} alt={history.title} />
                                 <div className="movie-title">{history.title}</div>
                                 <div className="watched-at">Xem lúc: {new Date(history.watched_at).toLocaleString()}</div>
@@ -135,6 +147,19 @@ function WatchHistory() {
                     ))}
                 </div>
             )}
+            <div className="more">
+                <ul>
+                    {Array.from({length: totalPages}, (_, index) =>(
+                        <li key={index}>
+                            <button className={`page-button ${currentPage === index +1 ? 'active' :''}`} 
+                                onClick={()=> handlePageChange(index+1)}
+                                >
+                                {index+1}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
     );
 }

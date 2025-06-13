@@ -24,6 +24,7 @@
 .watched-at {
     font-size: 0.9em;
     color: #ccc;
+    max-height: 19px;
 }
 
 .header-container {
@@ -33,7 +34,7 @@
     margin-bottom: 30px;
 }
 
-.movie-list {
+.movie-list-history {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
@@ -45,22 +46,23 @@
     width: 200px;
 }
 
-.movie-card {
+.movie-card-history {
     display: block;
     text-decoration: none;
     color: inherit;
     width: 200px;
+    background-color: #333;
     border: 1px solid #ddd;
     border-radius: 8px;
     overflow: hidden;
     transition: transform 0.2s;
 }
 
-.movie-card:hover {
+.movie-card-history:hover {
     transform: scale(1.05);
 }
 
-.movie-card img {
+.movie-card-history img {
     width: 100%;
     height: 300px;
     object-fit: cover;
