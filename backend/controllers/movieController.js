@@ -81,12 +81,14 @@ const getMoviesAdmin = (req, res) => {
             m.image_url,
             m.status,
             m.genre,
+            m.description,
             m.release_year AS year,
             m.duration,
             COUNT(e.episode_id) AS episodes
         FROM movies m
         LEFT JOIN episodes e ON m.movie_id = e.movie_id
-        GROUP BY m.movie_id
+        GROUP BY m.movie_id 
+        ORDER BY m.movie_id DESC
     `;
 
     db.query(query, (err, results) => {
@@ -99,33 +101,34 @@ const getMoviesAdmin = (req, res) => {
 const getMovieById = (req, res) => {
     const movieId = req.params.movie_id;
     const query = `
-    SELECT
-        movie_id,
-        title,
-        TRIM(image_url) AS image_url,
-        status,
-        TRIM(genre) AS genre,
-        release_year AS release_year,
-        duration,
-        description,
-        background_url
-
-    FROM movies 
-    WHERE movie_id = ?
+        SELECT
+            m.movie_id,
+            m.title,
+            TRIM(m.image_url) AS image_url,
+            m.status,
+            TRIM(m.genre) AS genre,
+            m.release_year AS release_year,
+            m.duration,
+            m.description,
+            m.background_url,
+            COUNT(e.episode_id) AS episodes_count
+        FROM movies m
+        LEFT JOIN episodes e ON m.movie_id = e.movie_id
+        WHERE m.movie_id = ?
+        GROUP BY m.movie_id
     `;
 
     db.query(query, [movieId], (err, result) => {
         if(err) {
             console.error('Lỗi lấy chi tiết movie: ', err);
-            return res.status(500).json({message: 'Lỗi máy chủ',error:err.message});
+            return res.status(500).json({message: 'Lỗi máy chủ', error: err.message});
         }
         if(result.length === 0) {
             return res.status(404).json({message: 'Không tìm thấy movie'});
         }
         const movieData = result[0];
-        movieData.image_url = movieData.image_url ? movieData.image_url.replace(/\s+/g, '') : '';
-        movieData.background_url = movieData.background_url ? movieData.background_url.replace(/\s+/g, '') : '';
-
+        movieData.image_url = movieData.image_url ? movieData.image_url.trim() : '';
+        movieData.background_url = movieData.background_url ? movieData.background_url.trim() : '';
         res.status(200).json(movieData);
     });
 };
@@ -469,6 +472,50 @@ const searchMoviesForAdmin= (req, res) =>{
     });
 }
 
+const searchMoviesForContent = (req, res) => {
+  const { q: query, status } = req.query;
+
+  if (!query) {
+    return res.status(400).json({ error: 'Vui lòng nhập từ khóa tìm kiếm.' });
+  }
+
+  const likeQuery = `%${query}%`;
+  let sql = `
+    SELECT 
+      m.movie_id,
+      m.title,
+      m.image_url,
+      m.genre,
+      m.release_year AS year,
+      m.duration,
+      m.description,
+      m.status,
+      COUNT(e.episode_id) AS episodes
+    FROM movies m
+    LEFT JOIN episodes e ON m.movie_id = e.movie_id
+    WHERE m.title LIKE ?
+  `;
+  const params = [likeQuery];
+
+  // Thêm điều kiện trạng thái nếu có
+  if (status && ['Approved', 'Pending'].includes(status)) {
+    sql += ' AND m.status = ?';
+    params.push(status);
+  }
+
+  sql += ' GROUP BY m.movie_id ORDER BY m.movie_id DESC';
+
+  db.query(sql, params, (err, results) => {
+    if (err) {
+      console.error('Lỗi tìm kiếm phim:', err);
+      return res.status(500).json({ error: 'Lỗi máy chủ khi tìm kiếm phim' });
+    }
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Không tìm thấy phim phù hợp.' });
+    }
+    res.status(200).json(results);
+  });
+};
 
 module.exports = {
     getMovies,
@@ -481,6 +528,7 @@ module.exports = {
     deleteMovie,
     getSliderMovie,
     searchMovies,
-    searchMoviesForAdmin
+    searchMoviesForAdmin,
+    searchMoviesForContent
 };
 
