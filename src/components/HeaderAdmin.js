@@ -28,7 +28,8 @@ function HeaderAdmin() {
 
                 if (currentPath.includes('/manageuser') || currentPath.includes('/admin/search-users')){
                     navigate(`/admin/search-users?userName=${encodeURIComponent(trimmedSearchTerm)}`);
-                } else if (currentPath.includes('/managemovie') || currentPath.includes('/admin/search-movies')){
+                } else if (currentPath.includes('/managemovie') || currentPath.includes('/admin/search-movies') 
+                    || currentPath.includes('/admin/episodes') || currentPath.includes('/admin/edit') || currentPath.includes('/admin/add')){
                     navigate(`/admin/search-movies?movieName=${encodeURIComponent(trimmedSearchTerm)}`);
                 }
                 setSearchTerm('');
@@ -39,7 +40,8 @@ function HeaderAdmin() {
         const currentPath= location.pathname;
         if (currentPath.includes('/manageuser') || currentPath.includes('/admin/search-users')){
             return "Tìm kiếm người dùng"
-        }else if (currentPath.includes('/managemovie') || currentPath.includes('/admin/search-movies')){
+        }else if (currentPath.includes('/managemovie') || currentPath.includes('/admin/search-movies') 
+            || currentPath.includes('/admin/episodes') || currentPath.includes('/admin/edit') || currentPath.includes('/admin/add') ){
             return "Tìm kiếm phim"
         }
         return "Tìm kiếm" 
