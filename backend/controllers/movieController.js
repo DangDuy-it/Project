@@ -142,9 +142,14 @@ const updateMovie = (req, res) => {
         duration,
         status,
         description,
-        image_url,
-        background_url
     } = req.body;
+    const image_url = req.files['image']
+        ? `/images/${req.files['image'][0].filename}`
+        : req.body.existing_image_url;
+
+    const background_url = req.files['background']
+        ? `/images/${req.files['background'][0].filename}`
+        : req.body.existing_background_url;
 
     const updateMovieSql = `
         UPDATE movies
@@ -472,50 +477,7 @@ const searchMoviesForAdmin= (req, res) =>{
     });
 }
 
-const searchMoviesForContent = (req, res) => {
-  const { q: query, status } = req.query;
 
-  if (!query) {
-    return res.status(400).json({ error: 'Vui lòng nhập từ khóa tìm kiếm.' });
-  }
-
-  const likeQuery = `%${query}%`;
-  let sql = `
-    SELECT 
-      m.movie_id,
-      m.title,
-      m.image_url,
-      m.genre,
-      m.release_year AS year,
-      m.duration,
-      m.description,
-      m.status,
-      COUNT(e.episode_id) AS episodes
-    FROM movies m
-    LEFT JOIN episodes e ON m.movie_id = e.movie_id
-    WHERE m.title LIKE ?
-  `;
-  const params = [likeQuery];
-
-  // Thêm điều kiện trạng thái nếu có
-  if (status && ['Approved', 'Pending'].includes(status)) {
-    sql += ' AND m.status = ?';
-    params.push(status);
-  }
-
-  sql += ' GROUP BY m.movie_id ORDER BY m.movie_id DESC';
-
-  db.query(sql, params, (err, results) => {
-    if (err) {
-      console.error('Lỗi tìm kiếm phim:', err);
-      return res.status(500).json({ error: 'Lỗi máy chủ khi tìm kiếm phim' });
-    }
-    if (results.length === 0) {
-      return res.status(404).json({ error: 'Không tìm thấy phim phù hợp.' });
-    }
-    res.status(200).json(results);
-  });
-};
 
 module.exports = {
     getMovies,
@@ -529,6 +491,6 @@ module.exports = {
     getSliderMovie,
     searchMovies,
     searchMoviesForAdmin,
-    searchMoviesForContent
+
 };
 

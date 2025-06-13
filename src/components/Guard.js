@@ -60,6 +60,5 @@ export default function Guard({ children }) {
     return <Navigate to="/login" replace />;
   }
 
-  // Nếu hợp lệ (chưa đăng nhập ở route công khai hoặc người dùng hợp lệ), render children
   return children;
 }

@@ -6,6 +6,8 @@ import '../styles/EditMovie.css';
 function EditMovie() {
     const { movieId } = useParams();
     const navigate = useNavigate();
+    const [imageFile, setImageFile] = useState(null);
+    const [backgroundFile, setBackgroundFile] = useState(null);
     const [movie, setMovie] = useState({
         title: '',
         genre: '',
@@ -51,15 +53,43 @@ function EditMovie() {
     // Cập nhật thông tin phim
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.put(`http://localhost:3001/api/movies/${movieId}`, movie)
-            .then(() => {
-                alert("Cập nhật thành công!");
-                navigate('/managemovie');
-            })
-            .catch(err => {
-                console.error("Lỗi cập nhật:", err);
-                setError('Đã xảy ra lỗi khi cập nhật thông tin phim.');
-            });
+        const formData = new FormData();
+        formData.append('title', movie.title);
+        formData.append('genre', movie.genre);
+        formData.append('release_year', movie.release_year);
+        formData.append('duration', movie.duration);
+        formData.append('status', movie.status);
+        formData.append('description', movie.description);
+
+        if (imageFile) {
+            formData.append('image', imageFile);
+        } else {
+            formData.append('existing_image_url', movie.image_url);
+        }
+
+        if (backgroundFile) {
+            formData.append('background', backgroundFile);
+        } else {
+            formData.append('existing_background_url', movie.background_url); 
+        }
+
+        axios.put(`http://localhost:3001/api/movies/${movieId}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        .then(() => {
+            alert("Cập nhật thành công!");
+            navigate(-1);
+        })
+        .catch(err => {
+        if (err.response) {
+            console.error("Lỗi cập nhật (response):", err.response.data);
+        } else {
+            console.error("Lỗi cập nhật:", err.message);
+        }
+        setError('Đã xảy ra lỗi khi cập nhật thông tin phim.');
+        });
     };
 
     if (loading) {
@@ -115,16 +145,15 @@ function EditMovie() {
                         <select id="status" name="status" value={movie.status} onChange={handleChange}>
                             <option value="Approved">Approved</option>
                             <option value="Pending">Pending</option>
-                            <option value="Rejected">Rejected</option>
                         </select>
                     </div>
                     <div className="form-group">
-                        <label htmlFor="image_url">URL ảnh:</label>
-                        <input type="text" id="image_url" name="image_url" value={movie.image_url} onChange={handleChange} />
+                        <label htmlFor="image">Ảnh phim:</label>
+                        <input type="file" id="image" accept="image/*" onChange={(e) => setImageFile(e.target.files[0])} />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="background_url">URL ảnh:</label>
-                        <input type="text" id="background_url" name="background_url" value={movie.background_url} onChange={handleChange} />
+                        <label htmlFor="background">Ảnh nền:</label>
+                        <input type="file" id="background" accept="image/*" onChange={(e)=> setBackgroundFile(e.target.files[0])} />
                     </div>
                 </div>
             </form>
