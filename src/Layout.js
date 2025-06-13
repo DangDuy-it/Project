@@ -7,7 +7,6 @@ import Login from "./pages/User/Login";
 import Register from "./pages/User/Register";
 import MoviePlayer from "./components/MoviePlayer";
 import Profile from "./pages/User/Profile";
-import ProtectedRoute from "./components/ProtectedRoute";
 import ManageUser from "./pages/Admin/ManageUser";
 import ManageMovie from "./pages/Admin/ManageMovie";
 import UserInfor from "./components/UserDetail";
@@ -21,6 +20,7 @@ import WatchHistoryList from "./pages/User/WatchHistoryList";
 import ListSearchUser from "./pages/Admin/ListSearchUser";
 import ListSearchMovie from "./pages/Admin/ListSearchMovie";
 import EpisodesContent from './pages/Admin/EpisodesContent';
+import Forgot from "./pages/User/Forgot";
 
 export default function Layout() {
     const location = useLocation();
@@ -42,14 +42,8 @@ export default function Layout() {
           <Route path="/movies/favorites" element={<Favorites/>}/>
           <Route path="/movieDetail/:id" element={<MovieDetail/>}/>
           <Route path="/movies/watch-history" element={<WatchHistoryList />} />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/forgot-password" element={<Forgot />} />
+          <Route path="/profile" element={<Profile />}/>
           <Route path="/manageuser" element={<ManageUser />} />
           <Route path="/managemovie" element={<ManageMovie />} />
           <Route path="/admin/user/:userId" element={<UserInfor />} />
