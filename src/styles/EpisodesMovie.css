@@ -1,0 +1,128 @@
+.episode-manager-container {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 1000px;
+  margin: 30px auto;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.episode-manager-container h2 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 30px;
+  color: #ffffff;
+}
+
+.add-episode-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  background: #2a2a2a;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  border: 1px solid #444;
+}
+
+.add-episode-section input {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  width: 200px;
+  background-color: #333;
+  color: #fff;
+  flex-grow: 1;
+}
+
+.add-episode-section input::placeholder {
+  color: #bbb;
+}
+
+.add-episode-section button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  min-width: 120px;
+}
+
+.add-episode-section button:hover {
+  background-color: #0056b3;
+}
+
+.add-episode-section .cancel-button {
+  background-color: #6c757d; /* Màu xám cho nút Hủy */
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  min-width: 120px;
+}
+
+.add-episode-section .cancel-button:hover {
+  background-color: #5a6268;
+}
+
+.episode-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #222;
+  color: #eee;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.episode-list-table th,
+.episode-list-table td {
+  padding: 12px 15px;
+  border: 1px solid #444;
+  text-align: center;
+}
+
+.episode-list-table th {
+  background-color: #333;
+  font-weight: 600;
+}
+
+.episode-list-table td {
+  background-color: #2a2a2a;
+}
+
+.action-button {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 0 5px; /* Thêm khoảng cách giữa các nút */
+}
+
+.action-button:hover {
+  background-color: #b02a37;
+}
+
+.action-button.edit-button {
+  background-color: #28a745; /* Màu xanh lá cho nút Sửa */
+}
+
+.action-button.edit-button:hover {
+  background-color: #218838;
+}
+
+.empty-message {
+  text-align: center;
+  padding: 20px;
+  color: #bbb;
+  font-style: italic;
+}

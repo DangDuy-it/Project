@@ -12,7 +12,6 @@ import ManageUser from "./pages/Admin/ManageUser";
 import ManageMovie from "./pages/Admin/ManageMovie";
 import UserInfor from "./components/UserDetail";
 import EditMovie from "./components/EditMovie";
-import AddEpisode from "./components/AddEpisode";
 import SearchResults from "./pages/User/PageSearch";
 import CategoryMovies from "./pages/User/TheLoai";
 import AddMovie from "./components/AddMovie";
@@ -21,6 +20,7 @@ import MovieDetail from "./pages/User/MovieDetail";
 import WatchHistoryList from "./pages/User/WatchHistoryList";
 import ListSearchUser from "./pages/Admin/ListSearchUser";
 import ListSearchMovie from "./pages/Admin/ListSearchMovie";
+import EpisodesContent from './pages/Admin/EpisodesContent';
 
 export default function Layout() {
     const location = useLocation();
@@ -54,9 +54,9 @@ export default function Layout() {
           <Route path="/managemovie" element={<ManageMovie />} />
           <Route path="/admin/user/:userId" element={<UserInfor />} />
           <Route path="/admin/edit/:movieId" element={<EditMovie />} />
-          <Route path="/admin/add/:movieId/episode" element={<AddEpisode />} />
           <Route path="/admin/search-users" element={<ListSearchUser />} />
           <Route path="/admin/search-movies" element={<ListSearchMovie />} />
+          <Route path="/admin/episodes/:movie_id" element={<EpisodesContent />} />
           <Route path="/admin/add" element={<AddMovie/>} />
         </Routes>
       </>

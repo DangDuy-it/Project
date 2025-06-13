@@ -51,6 +51,8 @@
     text-align: center;
     margin-top: 10px;
     color: white;
+    max-height: 24px;
+
 }
 .more{
     justify-items: center;

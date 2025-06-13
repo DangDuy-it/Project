@@ -6,7 +6,7 @@ import '../styles/List.css';
 function List() {
     const [animeList, setAnimeList] = useState([]);
     const [currentPage, setCurrentPage]= useState(1);
-    const moviesPerPage= 15;
+    const moviesPerPage= 10;
 
     useEffect(() => {
         axios.get('http://localhost:3001/api/movies')
