@@ -50,7 +50,7 @@ function HeaderAdmin() {
     return (
         <nav>
             <div className="logo">
-                <Link to="/">
+                <Link to="/manageuser">
                     <img src={logo_web} alt="Logo" className="logo-img" />
                 </Link>
             </div>
