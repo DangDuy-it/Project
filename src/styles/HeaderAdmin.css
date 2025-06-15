@@ -48,11 +48,16 @@ nav{
 .user-infor li:hover{
     color: aquamarine;
 }
-.button-exit button{
-    background-color: brown;
-    color: white;
-    font-weight: bold;
-    padding: 10px;
-    border-radius: 5px 10px ;
-    cursor: pointer;
+.button-logout {
+  background-color: brown;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.button-logout:hover {
+  background-color: #d9363e;
 }

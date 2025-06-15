@@ -63,6 +63,9 @@
     display: block;/* Xóa khoảng trống thừa bên dưới ảnh */
     filter: brightness(60%);/* Làm tối ảnh nền một chút để chữ dễ đọc hơn */
 }
+.slide-background:hover{
+    cursor: pointer;
+}
 .watch-btn{
     background-color: brown;
     color: white;

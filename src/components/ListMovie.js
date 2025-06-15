@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom';
 
 function AdminList() {
     const [animeList, setAnimeList] = useState([]);
-
+    const [currentPage, setCurrentPage]= useState(1);
+    const moviesPerPage= 5;
     useEffect(() => {
         axios.get('http://localhost:3001/api/moviesad')
             .then(res => {
@@ -13,17 +14,27 @@ function AdminList() {
             })
             .catch(err => console.error("Lỗi:", err));
     }, []);
+    const totalPages= Math.ceil(animeList.length/moviesPerPage);
+    // Tính danh sách phim hiện thị theo trang 
+    const indexOfLastMovie= currentPage * moviesPerPage;
+    const indexOfFirstMovie= indexOfLastMovie - moviesPerPage;
+    const currentMovies= animeList.slice(indexOfFirstMovie, indexOfLastMovie);
 
+    const handlePageChange= (pageNumber) =>{
+        setCurrentPage(pageNumber);
+    }
     return (
         <div className="list-movies">
             <div className="list-movie-tag">
                 <li>Quản lý phim</li>
             </div>
             <div className="button-add">
-                <button>THÊM PHIM</button>
+                <Link to={`/admin/add`}>
+                    <button>THÊM PHIM</button>
+                </Link>
             </div>
             <div className="list-movie">
-                {animeList.map((item) => (
+                {currentMovies.map((item) => (
                     <AnimeItem
                         key={item.movie_id}
                         movie_id={item.movie_id}
@@ -36,6 +47,19 @@ function AdminList() {
                         status={item.status}
                     />
                 ))}
+            </div>
+            <div className="more">
+                <ul>
+                    {Array.from({length: totalPages}, (_, index) =>(
+                        <li key={index}>
+                            <button className={`page-button ${currentPage === index +1 ? 'active' :''}`} 
+                                onClick={()=> handlePageChange(index+1)}
+                                >
+                                {index+1}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
             </div>
         </div>
     );
@@ -90,6 +114,9 @@ function AnimeItem({movie_id, title, image_url, genre, year, duration, episodes,
                     <button>Sửa thông tin phim</button>
                 </Link>
                 <button onClick={() => handleDelete(movie_id)}>Xóa Phim</button>
+                <Link to={`/admin/episodes/${movie_id}`}>
+                    <button>Quản lý tập phim</button>
+                </Link>
             </div>
 
         </div>

@@ -1,0 +1,75 @@
+
+.favorite-movies-container{
+    padding: 20px; /* Khoảng cách padding xung quanh nội dung */
+    max-width: 1200px; /* Giới hạn chiều rộng tối đa */
+    margin: 0 auto; /* Căn giữa khối nội dung */
+    color: white; /* Màu chữ mặc định */
+    min-height: 100vh;
+}
+.no-favorites{
+    font-weight: bold;
+    font-size: 1.2em;
+}
+.favorite-movies-container h2{
+    margin: 0; /* Xóa margin mặc định của h2 */
+    font-size: 1.2em; /* Cỡ chữ tiêu đề */
+    width: fit-content;
+    background-color: brown;
+    padding: 10px 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+.movie-list-favorites {
+    display: grid; /* SỬ DỤNG GRID LAYOUT */
+    /* Tạo các cột tự động, mỗi cột rộng ít nhất 160px và lấp đầy phần còn lại */
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px; /* Khoảng cách giữa các movie-card (giữ nguyên 20px như bạn cung cấp) */
+    list-style: none; /* Xóa dấu đầu dòng mặc định của ul */
+    padding: 0; /* Xóa padding mặc định của ul */
+    margin: 0 ; /* Căn giữa khối grid */
+    /* flex-wrap: wrap; <- Không cần trong Grid */
+    /* justify-content: center; <- Không cần trong Grid cho mục đích căn giữa item */
+}
+
+/* Style cho từng movie card (li class="movie-card") */
+/* Giữ nguyên các style bên trong card */
+.movie-card-favorites {
+    width: 100%; /* Mỗi card chiếm toàn bộ chiều rộng của ô grid */
+    text-align: center; /* Căn giữa nội dung bên trong card */
+    transition: transform 0.2s ease; /* Hiệu ứng zoom khi hover */
+    text-decoration: none; /* Xóa gạch chân mặc định của thẻ a nếu có */
+    color: inherit; /* Kế thừa màu chữ từ cha */
+    background-color: #333; /* Màu nền cho card */
+    border-radius: 8px; /* Bo tròn góc card */
+    overflow: hidden; /* Đảm bảo ảnh không tràn ra ngoài */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5); /* Thêm đổ bóng */
+    display: flex; /* Sử dụng flexbox cho nội dung bên trong card */
+    flex-direction: column; /* Sắp xếp nội dung theo cột */
+}
+
+/* Đảm bảo link bên trong card không bị định kiểu lạ */
+.movie-card-favorites a {
+     text-decoration: none; /* Xóa gạch chân link */
+     color: inherit; /* Kế thừa màu chữ */
+     display: flex; /* Sử dụng flexbox */
+     flex-direction: column; /* Sắp xếp ảnh và tiêu đề theo cột */
+     height: 100%; /* Chiều cao đầy đủ */
+}
+
+
+/* Hiệu ứng khi di chuột qua card */
+/* Giữ nguyên */
+.movie-card-favorites:hover {
+    transform: scale(1.05); /* Phóng to card khi di chuột qua */
+}
+
+/* Style cho ảnh trong card */
+/* Giữ nguyên */
+.movie-card-favorites img {
+    width: 100%; /* Chiều rộng ảnh bằng 100% container */
+    height: 250px; /* Chiều cao cố định cho ảnh */
+    border-radius: 8px; /* Bo tròn góc ảnh */
+    /* box-shadow đã có ở movie-card */
+    object-fit: cover; /* Đảm bảo ảnh không bị méo */
+    border-bottom: 1px solid #444; /* Đường kẻ dưới ảnh */
+}

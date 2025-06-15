@@ -71,7 +71,7 @@ const login = (req, res) => {
         const user = result[0];
         const match = await bcrypt.compare(password, user.password);
         if (!match) {
-            return res.status(401).json({ error: 'Email hoặc mật khẩu không đúng' });
+            return res.status(401).json({ error: 'Mật khẩu không đúng' });
         }
 
         const token = jwt.sign(
@@ -90,6 +90,11 @@ const login = (req, res) => {
 
 // API: Cập nhật thông tin người dùng (yêu cầu đăng nhập)
 const updateUser = async (req, res) => {
+    // Kiểm tra xem req.user có tồn tại không
+    if (!req.user || !req.user.user_id) {
+        return res.status(401).json({ error: 'Không thể xác thực người dùng, vui lòng đăng nhập lại' });
+    }
+
     const { user_name, email, password } = req.body;
     const user_id = req.user.user_id;
 
@@ -101,16 +106,7 @@ const updateUser = async (req, res) => {
                 if (err) {
                     console.log('Lỗi kiểm tra email/user_name:', err);
                     return res.status(500).json({ error: err.message });
-                }
-                if (result.length > 0) {
-                    const existingUser = result[0];
-                    if (existingUser.email === email) {
-                        return res.status(400).json({ error: 'Email đã được sử dụng' });
-                    }
-                    if (existingUser.user_name === user_name) {
-                        return res.status(400).json({ error: 'Tên người dùng đã được sử dụng' });
-                    }
-                }
+                }       
 
                 let hashedPassword = null;
                 if (password) {
@@ -162,8 +158,47 @@ const updateUser = async (req, res) => {
     }
 };
 
+// API: Quên mật khẩu (Forgot Password)
+const forgotPassword = (req, res) => {
+    const { user_name, email, new_password } = req.body;
+
+    if (!user_name || !email || !new_password) {
+        return res.status(400).json({ error: 'Vui lòng điền đầy đủ thông tin (tên, email, mật khẩu mới)' });
+    }
+
+    db.query('SELECT * FROM users WHERE user_name = ? AND email = ?', [user_name, email], async (err, result) => {
+        if (err) {
+            console.log('Lỗi kiểm tra user_name và email:', err);
+            return res.status(500).json({ error: err.message });
+        }
+        if (result.length === 0) {
+            return res.status(404).json({ error: 'Không tìm thấy người dùng với thông tin đã cung cấp' });
+        }
+
+        const user = result[0];
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(new_password, saltRounds);
+
+        db.query(
+            'UPDATE users SET password = ? WHERE user_id = ?',
+            [hashedPassword, user.user_id],
+            (err, result) => {
+                if (err) {
+                    console.log('Lỗi khi cập nhật mật khẩu:', err);
+                    return res.status(500).json({ error: err.message });
+                }
+                res.json({
+                    message: 'Mật khẩu đã được cập nhật thành công!',
+                    user: { user_id: user.user_id, user_name: user.user_name, email: user.email }
+                });
+            }
+        );
+    });
+};
+
 module.exports = {
     register,
     login,
-    updateUser
+    updateUser,
+    forgotPassword
 };

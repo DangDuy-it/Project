@@ -29,7 +29,7 @@ const AnimeSlider=() => {
     };
     const handleWatchClick = ( movieId)=>{
         if ( movieId){
-            navigate(`/movie/${movieId}`);
+            navigate(`/movieDetail/${movieId}`);
         }
         else {
             console.warn(`Không thể chuyển hướng tập phim`);
@@ -48,7 +48,7 @@ const AnimeSlider=() => {
                             <button className="watch-btn" onClick={()=> handleWatchClick(slide.movie_id)}>Xem Phim</button>
                         </div>
                         <div className="slide-background">
-                            <img src={slide.background_url} alt={slide.title} />
+                            <img src={slide.background_url} alt={slide.title}  />
                         </div>
                     </div>
                 ))}
