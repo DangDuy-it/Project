@@ -120,6 +120,12 @@ const MovieDetail = () => {
             setRating(10);
             const res = await axios.get(`http://localhost:3001/api/reviews/${id}`);
             setReviews(res.data);
+            // Fetch lại dữ liệu phim để cập nhật avg_rating và total_reviews
+            const movieRes = await fetch(`http://localhost:3001/api/movies/${id}`);
+            const movieData = await movieRes.json();
+            if (movieData) {
+                setMovie(movieData);
+            }
             toast.success("Đánh giá thành công!");
         } catch (err) {
             toast.error(

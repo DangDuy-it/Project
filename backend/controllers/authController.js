@@ -74,6 +74,10 @@ const login = (req, res) => {
             return res.status(401).json({ error: 'Mật khẩu không đúng' });
         }
 
+        if (user.status === 'Banned') {
+            return res.status(403).json({ error: 'Tài khoản của bạn đã bị cấm.' });
+        }
+
         const token = jwt.sign(
             { user_id: user.user_id, user_name: user.user_name, email: user.email },
             'your_secret_key',
@@ -90,66 +94,121 @@ const login = (req, res) => {
 
 // API: Cập nhật thông tin người dùng (yêu cầu đăng nhập)
 const updateUser = async (req, res) => {
-    // Kiểm tra xem req.user có tồn tại không
     if (!req.user || !req.user.user_id) {
         return res.status(401).json({ error: 'Không thể xác thực người dùng, vui lòng đăng nhập lại' });
     }
 
-    const { user_name, email, password } = req.body;
+    const { user_name, oldPassword, password } = req.body;
     const user_id = req.user.user_id;
 
     try {
+        // Kiểm tra user_name đã tồn tại
         db.query(
-            'SELECT * FROM users WHERE (email = ? OR user_name = ?) AND user_id != ?',
-            [email, user_name, user_id],
+            'SELECT * FROM users WHERE user_name = ? AND user_id != ?',
+            [user_name, user_id],
             async (err, result) => {
                 if (err) {
-                    console.log('Lỗi kiểm tra email/user_name:', err);
+                    console.log('Lỗi kiểm tra user_name:', err);
                     return res.status(500).json({ error: err.message });
-                }       
-
-                let hashedPassword = null;
-                if (password) {
-                    const saltRounds = 10;
-                    hashedPassword = await bcrypt.hash(password, saltRounds);
+                }
+                if (result.length > 0) {
+                    return res.status(400).json({ error: 'Tên người dùng đã được sử dụng' });
                 }
 
-                const updateFields = [];
-                const updateValues = [];
-
-                if (user_name) {
-                    updateFields.push('user_name = ?');
-                    updateValues.push(user_name);
-                }
-                if (email) {
-                    updateFields.push('email = ?');
-                    updateValues.push(email);
-                }
-                if (hashedPassword) {
-                    updateFields.push('password = ?');
-                    updateValues.push(hashedPassword);
-                }
-
-                if (updateFields.length === 0) {
-                    return res.status(400).json({ error: 'Không có thông tin nào để cập nhật' });
-                }
-
-                updateValues.push(user_id);
-                const query = `UPDATE users SET ${updateFields.join(', ')} WHERE user_id = ?`;
-
-                db.query(query, updateValues, (err, result) => {
-                    if (err) {
-                        console.log('Lỗi khi cập nhật user:', err);
-                        return res.status(500).json({ error: err.message });
+                // Nếu người dùng nhập mật khẩu cũ, yêu cầu mật khẩu mới không được trống
+                if (oldPassword) {
+                    if (!password) {
+                        return res.status(400).json({ error: 'Vui lòng nhập mật khẩu mới' });
                     }
-                    const updatedUser = { user_id, user_name: user_name || req.user.user_name, email: email || req.user.email };
-                    const newToken = jwt.sign(updatedUser, 'your_secret_key', { expiresIn: '1h' });
-                    res.json({
-                        message: 'Cập nhật thông tin thành công!',
-                        token: newToken,
-                        user: updatedUser
+
+                    // Lấy mật khẩu hiện tại từ database
+                    db.query('SELECT password FROM users WHERE user_id = ?', [user_id], async (err, result) => {
+                        if (err) {
+                            console.log('Lỗi khi lấy mật khẩu:', err);
+                            return res.status(500).json({ error: err.message });
+                        }
+                        if (result.length === 0) {
+                            return res.status(404).json({ error: 'Không tìm thấy người dùng' });
+                        }
+
+                        const currentPassword = result[0].password;
+                        const match = await bcrypt.compare(oldPassword, currentPassword);
+                        if (!match) {
+                            return res.status(401).json({ error: 'Mật khẩu cũ không đúng' });
+                        }
+
+                        // Nếu mật khẩu cũ đúng, mã hóa mật khẩu mới
+                        const saltRounds = 10;
+                        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+                        // Tiến hành cập nhật thông tin
+                        const updateFields = [];
+                        const updateValues = [];
+
+                        if (user_name) {
+                            updateFields.push('user_name = ?');
+                            updateValues.push(user_name);
+                        }
+                        if (hashedPassword) {
+                            updateFields.push('password = ?');
+                            updateValues.push(hashedPassword);
+                        }
+
+                        if (updateFields.length === 0) {
+                            return res.status(400).json({ error: 'Không có thông tin nào để cập nhật' });
+                        }
+
+                        updateValues.push(user_id);
+                        const query = `UPDATE users SET ${updateFields.join(', ')} WHERE user_id = ?`;
+
+                        db.query(query, updateValues, (err, result) => {
+                            if (err) {
+                                console.log('Lỗi khi cập nhật user:', err);
+                                return res.status(500).json({ error: err.message });
+                            }
+                            const updatedUser = { user_id, user_name: user_name || req.user.user_name, email: req.user.email };
+                            const newToken = jwt.sign(updatedUser, 'your_secret_key', { expiresIn: '1h' });
+                            res.json({
+                                message: 'Cập nhật thông tin thành công!',
+                                token: newToken,
+                                user: updatedUser
+                            });
+                        });
                     });
-                });
+                } else if (!oldPassword && password) {
+                    // Nếu chỉ nhập mật khẩu mới mà không nhập mật khẩu cũ
+                    return res.status(400).json({ error: 'Vui lòng nhập mật khẩu cũ' });
+                } else {
+                    // Nếu không nhập mật khẩu cũ và mật khẩu mới, chỉ cập nhật user_name
+                    const updateFields = [];
+                    const updateValues = [];
+
+                    if (user_name) {
+                        updateFields.push('user_name = ?');
+                        updateValues.push(user_name);
+                    }
+
+                    if (updateFields.length === 0) {
+                        return res.status(400).json({ error: 'Không có thông tin nào để cập nhật' });
+                    }
+
+                    updateValues.push(user_id);
+                    const query = `UPDATE users SET ${updateFields.join(', ')} WHERE user_id = ?`;
+
+                    db.query(query, updateValues, (err, result) => {
+                        if (err) {
+                            console.log('Lỗi khi cập nhật user:', err);
+                            return res.status(500).json({ error: err.message });
+                        }
+                        const updatedUser = { user_id, user_name: user_name || req.user.user_name, email: req.user.email };
+                        const newToken = jwt.sign(updatedUser, 'your_secret_key', { expiresIn: '1h' });
+                        res.json({
+                            message: 'Cập nhật thông tin thành công!',
+                            token: newToken,
+                            user: updatedUser
+                        });
+                    });
+                }
             }
         );
     } catch (err) {
@@ -158,7 +217,7 @@ const updateUser = async (req, res) => {
     }
 };
 
-// API: Quên mật khẩu (Forgot Password)
+// API: Quên mật khẩu
 const forgotPassword = (req, res) => {
     const { user_name, email, new_password } = req.body;
 
