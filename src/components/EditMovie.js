@@ -21,16 +21,29 @@ function EditMovie() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
+    const [categories, setCategories] = useState([]);
+    const [selectedGenres, setSelectedGenres] = useState([]);
+    const [showTags, setShowTags] = useState(false);
+    
+    useEffect(() => {
+        axios.get('http://localhost:3001/api/categories')
+            .then(res => setCategories(res.data))
+            .catch(err => console.error("Lỗi lấy thể loại:", err));
+    }, []);
     // Lấy thông tin phim
     useEffect(() => {
         axios.get(`http://localhost:3001/api/movies/${movieId}/edit`)
             .then(res => {
                 const data = res.data;
                 console.log("Dữ liệu API trả về:", data); // In ra để kiểm tra
-                const genres = Array.isArray(data.genre) ? data.genre.join(', ') : data.genre || '';
+                const genres = Array.isArray(data.genre)
+                    ? data.genre
+                    : typeof data.genre === 'string'
+                        ? data.genre.split(',').map(g => g.trim())
+                        : [];
+                setSelectedGenres(genres);
                 setMovie({
                     title: data.title || '',
-                    genre: genres,
                     release_year: data.release_year?.toString() || '',
                     duration: data.duration?.toString() || '',
                     status: data.status || '',
@@ -51,11 +64,29 @@ function EditMovie() {
         setMovie({ ...movie, [e.target.name]: e.target.value });
     };
     // Cập nhật thông tin phim
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if(selectedGenres.length===0){
+            alert("Vui lòng chọn thể loại cho phim");
+            return;
+        }
+        if (movie.status === "Approved") {
+            try {
+                const epRes = await axios.get(`http://localhost:3001/api/movies/${movieId}/edit`);
+                if (!epRes.data || epRes.data.length === 0) {
+                    alert("Phim chưa có tập phim. Không thể duyệt (Approved).");
+                    return;
+                }
+            } catch (checkErr) {
+                console.error("Lỗi kiểm tra tập phim:", checkErr);
+                alert("Không thể kiểm tra tập phim. Thử lại sau.");
+                return;
+            }
+        }
         const formData = new FormData();
         formData.append('title', movie.title);
-        formData.append('genre', movie.genre);
+        formData.append('genre', selectedGenres.join(','));
         formData.append('release_year', movie.release_year);
         formData.append('duration', movie.duration);
         formData.append('status', movie.status);
@@ -83,13 +114,12 @@ function EditMovie() {
             navigate(-1);
         })
         .catch(err => {
-        if (err.response) {
-            console.error("Lỗi cập nhật (response):", err.response.data);
-        } else {
-            console.error("Lỗi cập nhật:", err.message);
-        }
-        setError('Đã xảy ra lỗi khi cập nhật thông tin phim.');
-        });
+                if (err.response && err.response.data?.message) {
+                    alert(err.response.data.message); 
+                } else {
+                    alert("Đã xảy ra lỗi khi cập nhật thông tin phim.");
+                }
+            });
     };
 
     if (loading) {
@@ -125,8 +155,31 @@ function EditMovie() {
                         <input type="text" id="title" name="title" value={movie.title} onChange={handleChange} required />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="genre">Thể loại:</label>
-                        <input type="text" id="genre" name="genre" value={movie.genre} onChange={handleChange} />
+                        <label>Thể loại:</label>
+                        <div className="genre-tag-wrapper">
+                            <div className="genre-tag-input" onClick={() => setShowTags(!showTags)}>
+                                {selectedGenres.length > 0 ? selectedGenres.join(', ') :"Chưa chọn thể loại nào"}
+                            </div>
+                            {showTags && (
+                                <div className="genre-tags-popup">
+                                    {categories.map(cat => (
+                                        <div
+                                            key={cat.category_id}
+                                            className={`genre-tag ${selectedGenres.includes(cat.category_name) ? 'selected' : ''}`}
+                                            onClick={() => {
+                                                if (selectedGenres.includes(cat.category_name)) {
+                                                    setSelectedGenres(selectedGenres.filter(name => name !== cat.category_name));
+                                                } else {
+                                                    setSelectedGenres([...selectedGenres, cat.category_name]);
+                                                }
+                                            }}
+                                        >
+                                            {cat.category_name}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                     <div className="form-group">
                         <label htmlFor="release_year">Năm phát hành:</label>

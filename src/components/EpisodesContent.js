@@ -93,13 +93,13 @@ function EpisodesContent() {
 
             {/* Thêm hoặc sửa tập phim */}
             <div className="add-episode-section">
-                <input
+                {/* <input
                     type="number"
                     placeholder="Số tập"
                     name="episode_number"
                     value={newEpisode.episode_number}
                     onChange={handleInputChange}
-                />
+                /> */}
                 <input
                     type="text"
                     placeholder="Tiêu đề"
@@ -130,7 +130,6 @@ function EpisodesContent() {
                 <thead>
                     <tr>
                         <th>STT</th>
-                        <th>Số tập</th>
                         <th>Tiêu đề</th>
                         <th>Video</th>
                         <th>Hành động</th>
@@ -145,7 +144,6 @@ function EpisodesContent() {
                         episodes.map((ep, index) => (
                             <tr key={ep.episode_id}>
                                 <td>{index + 1}</td>
-                                <td>{ep.episode_number}</td>
                                 <td>{ep.title}</td>
                                 <td>
                                     <a href={ep.video_url} target="_blank" rel="noopener noreferrer">Xem</a>

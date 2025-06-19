@@ -58,6 +58,7 @@ function HeaderAdmin() {
                 <ul>
                     <li><Link to="/manageuser">QUẢN LÝ TÀI KHOẢN</Link></li>
                     <li><Link to="/managemovie">QUẢN LÝ PHIM</Link></li>  
+                    <li><Link to="/managecategory">QUẢN LÝ THỂ LOẠI</Link></li>
                 </ul>
             </div>
             <div className="search">

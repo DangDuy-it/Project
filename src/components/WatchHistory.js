@@ -132,9 +132,10 @@ function WatchHistory() {
                 <div className="movie-list-history">
                     {currentMovies.map(history => (
                         <div key={history.movie_id} className="movie-card-wrapper">
-                            <Link to={`/movieDetail/${history.movie_id}`} className="movie-card-history">
+                            <Link to={`/movie/${history.movie_id}/episode/${history.episode_number}`} className="movie-card-history">
                                 <img src={history.image_url} alt={history.title} />
-                                <div className="movie-title">{history.title}</div>
+                                <div className="movie-title">{history.movie_title}</div>
+                                <div className="episode-title">{history.episode_title}</div>
                                 <div className="watched-at">Xem lúc: {new Date(history.watched_at).toLocaleString()}</div>
                             </Link>
                             <button

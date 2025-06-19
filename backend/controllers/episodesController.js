@@ -69,25 +69,38 @@ const getEpisodeById = (req, res) => {
 
 // API: Thêm tập phim mới
 const addEpisode = (req, res) => {
-    const { movie_id, episode_number, title, video_url } = req.body;
+    const { movie_id, title, video_url } = req.body;
 
-    if (!movie_id || !episode_number || !title || !video_url) {
+    if (!movie_id || !title || !video_url) {
         return res.status(400).json({ error: 'Thiếu thông tin cần thiết (movie_id, episode_number, title, video_url).' });
     }
 
-    const query = `
-        INSERT INTO episodes (movie_id, episode_number, title, video_url)
-        VALUES (?, ?, ?, ?)
-    `;
-
-    db.query(query, [movie_id, episode_number, title, video_url], (err, results) => {
-        if (err) {
-            console.error('Lỗi khi thêm tập phim:', err);
-            return res.status(500).json({ error: 'Lỗi truy vấn cơ sở dữ liệu.' });
+    const countEpisodeSql=` SELECT COUNT(*) AS count
+                                FROM episodes 
+                                WHERE movie_id=?
+                            `;
+    db.query(countEpisodeSql,[movie_id], (epErr, epResult)=>{
+        if (epErr){
+            console.error('',epErr);
+            return res.status(500).json({error: ''});
         }
 
-        res.status(201).json({ message: 'Thêm tập phim thành công!', episode_id: results.insertId });
-    });
+        const episode_number= epResult[0].count+1;
+        const query = `
+            INSERT INTO episodes (movie_id, episode_number, title, video_url)
+            VALUES (?, ?, ?, ?)
+        `;
+    
+        db.query(query, [movie_id, episode_number, title, video_url], (err, results) => {
+            if (err) {
+                console.error('Lỗi khi thêm tập phim:', err);
+                return res.status(500).json({ error: 'Lỗi truy vấn cơ sở dữ liệu.' });
+            }
+    
+            res.status(201).json({ message: 'Thêm tập phim thành công!', episode_id: results.insertId });
+        });
+
+    })                          
 };
 
 // API: Xóa tập phim theo episode_id

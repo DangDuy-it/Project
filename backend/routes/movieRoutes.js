@@ -14,5 +14,5 @@ router.post('/api/movies/:movieId/episodes',movieController.addEpisode); // Thê
 router.delete('/api/movies/:movie_id', movieController.deleteMovie); // Xóa một bộ phim 
 router.get('/api/slider-movies', movieController.getSliderMovie); // Lấy danh sách phim hiện thị Slider
 router.post('/api/movies/add', upload.fields([ { name: 'image', maxCount: 1 },{ name: 'background', maxCount: 1 }]), movieController.addMovie);
-
+router.post("/api/movies/:movie_id/view_count", movieController.viewCount);
 module.exports = router;

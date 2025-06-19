@@ -151,12 +151,22 @@
   }
   
   .review {
+    display: flex;
     border-bottom: 1px solid #ddd;
     padding: 10px 0;
+    text-align: left;
+    gap: 10px;
+    align-items: center;
+  }
+  .review img{
+    height: 50px;
+    width: 50px;
+    border-radius: 10px;
   }
   
   .review p {
     margin: 5px 0;
+    display: grid;
   }
   
   .review p strong {

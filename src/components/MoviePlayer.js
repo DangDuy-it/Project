@@ -26,32 +26,21 @@ const MoviePlayer = () => {
         return false;
     };
 
-    const recordHistoryToDB = async (movieId) => {
-        if (isHistoryRecorded.current) {
-            console.log("Lịch sử đã được ghi trước đó, bỏ qua.");
+    const recordHistoryToDB = async (movieId, episodeId) => {
+        if (isHistoryRecorded.current || !movieId || !episodeId) {
             return;
         }
 
         const token = localStorage.getItem("token");
-        if (!token) {
-            console.log("Không có token, bỏ qua ghi lịch sử.");
-            toast.error("Vui lòng đăng nhập để ghi lịch sử xem phim!");
-            return;
-        }
-
-        if (!movieId) {
-            console.log("movieId không hợp lệ:", movieId);
-            toast.error("Không thể ghi lịch sử: movieId không hợp lệ");
-            return;
-        }
+        if (!token) return;
 
         try {
             const response = await axios.post(
                 "http://localhost:3001/api/watch-history",
-                { movie_id: movieId },
+                { movie_id: movieId, episode_id: episodeId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            console.log("Phản hồi từ server:", response.data);
+            console.log("Ghi lịch sử thành công:", response.data);
             toast.success("Đã ghi lịch sử xem phim thành công!");
             isHistoryRecorded.current = true;
         } catch (err) {
@@ -61,6 +50,7 @@ const MoviePlayer = () => {
             }
         }
     };
+
 
     useEffect(() => {
         console.log("useEffect chạy với id:", id, "và episodeNumber:", episodeNumber);
@@ -90,8 +80,16 @@ const MoviePlayer = () => {
                     setMovie({ ...movieData, episodes: [] });
                 }
 
-                if (movieData && movieData.title && id && !isHistoryRecorded.current) {
-                    await recordHistoryToDB(id);
+                if (
+                    movieData &&
+                    movieData.title &&
+                    id &&
+                    !isHistoryRecorded.current &&
+                    movieData.episodes?.length > 0
+                ) {
+                    const firstEp = movieData.episodes.find(ep => Number(ep.episode) === Number(episodeNumber)) || movieData.episodes[0];
+                    setCurrentEpisode(firstEp); // gán state trước
+                    await recordHistoryToDB(id, firstEp.episode_id); // truyền rõ episode_id
                 }
 
                 const reviewsRes = await axios.get(`http://localhost:3001/api/reviews/${id}`);
@@ -147,10 +145,14 @@ const MoviePlayer = () => {
         console.log("handleEpisodeClick được gọi với ep:", ep, "movie_id:", id);
         setCurrentEpisode(ep);
         navigate(`/movie/${id}/episode/${ep.episode}`, { replace: true });
-        if (!isHistoryRecorded.current) {
-            recordHistoryToDB(id);
+        if (!isHistoryRecorded.current && ep?.episode_id) {
+            recordHistoryToDB(id, ep.episode_id);
         }
     };
+    useEffect(() => {
+    axios.post(`http://localhost:3001/api/movies/${id}/view_count`)
+        .catch(err => console.error("Lỗi tăng lượt xem:", err.message));
+    }, [id]);
 
     if (loading) return <div>Đang tải...</div>;
     if (!movie) return <div>Không tìm thấy phim!</div>;
@@ -231,11 +233,11 @@ const MoviePlayer = () => {
                     {reviews.length > 0 ? (
                         reviews.map((review, index) => (
                             <div key={`review-${index}`} className="review">
-                                <p>
-                                    <strong>{review.user_name}</strong> ({new Date(review.review_date).toLocaleString()}) -{" "}
-                                    <span className="rating">Điểm: {review.rating}/10</span>
-                                </p>
-                                <p>{review.comment}</p>
+                                    <img src={"/images/daupha.jpg"} alt="" />
+                                <ul> 
+                                    <li><strong>{review.user_name}</strong> ({new Date(review.review_date).toLocaleString()}) -{" "}<span className="rating">Điểm: {review.rating}/10</span></li>
+                                    <p>{review.comment}</p>
+                                </ul>
                             </div>
                         ))
                     ) : (

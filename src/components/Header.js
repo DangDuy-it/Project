@@ -43,8 +43,8 @@ function Header() {
     setSearchKeyword(event.target.value);
   }
   const handleSearchSubmit=(event)=>{
-    if (event.key == 'Enter'){
-      if(searchKeyword.trim() != ''){
+    if (event.key=== 'Enter'){
+      if(searchKeyword.trim() !== ''){
         navigate(`/movies/search?keyword=${encodeURIComponent(searchKeyword)}`);  
         setSearchKeyword('');         
       }

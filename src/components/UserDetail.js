@@ -82,7 +82,7 @@ function UserDetail(){
                     <li><strong>Id tài khoản: </strong> {user.user_id}</li>
                     <li><strong>Tên tài khoản: </strong> {user.user_name}</li>
                     <li><strong>Email: </strong>{user.email}</li>
-                    <li><strong>Vai trò: </strong>{user.role_id == 1 ? 'Admin' : 'User'}</li>
+                    <li><strong>Vai trò: </strong>{user.role_id === 1 ? 'Admin' : 'User'}</li>
                     <li><strong>Ngày tạo tài khoản: </strong>{new Date(user.created_at).toLocaleDateString('vi-VN')}</li>
                     <li><strong>Trạng thái tài khoản: </strong>{isActive ? 'Active' : 'Banned'}</li>
                 </ul>

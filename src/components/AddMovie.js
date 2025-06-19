@@ -1,6 +1,6 @@
 import axios from "axios";
 import "../styles/AddMovie.css";
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 
 function AddMovie(){ 
@@ -14,7 +14,15 @@ function AddMovie(){
         background_url:'',
         status: 'Pending'
     });
+    const [showTags, setShowTags] = useState(false);
+    const [categories, setCategories] = useState([]);
+    const [selectedGenres, setSelectedGenres] = useState([]);
 
+    useEffect(() => {
+    axios.get('http://localhost:3001/api/categories')
+        .then((res) => setCategories(res.data))
+        .catch((err) => console.error("Lỗi khi lấy thể loại:", err));
+    }, []);
     const navigate= useNavigate();
     // Hàm xử lý thay đổi giá trị của input
     const handleInputChange = (e) => {
@@ -33,7 +41,7 @@ function AddMovie(){
         // Kiểm tra dữ liệu bắt buộc
         if (
             !formData.title || !formData.description || !formData.release_year ||
-            !formData.duration || !formData.genre || !formData.image || !formData.background
+            !formData.duration || selectedGenres.length === 0 || !formData.image || !formData.background
         ) {
             alert("Vui lòng điền đầy đủ thông tin và chọn ảnh!");
             return;
@@ -41,13 +49,13 @@ function AddMovie(){
 
         const formPayload = new FormData();
         formPayload.append("title", formData.title);
-        formPayload.append("genre", formData.genre);
+        formPayload.append("genre", selectedGenres.join(','));
         formPayload.append("release_year", parseInt(formData.release_year));
         formPayload.append("duration", parseInt(formData.duration));
         formPayload.append("description", formData.description);
         formPayload.append("status", formData.status);
-        formPayload.append("image", formData.image);             // tên trùng tên field trong backend
-        formPayload.append("background", formData.background);   // tên trùng tên field trong backend
+        formPayload.append("image", formData.image);             
+        formPayload.append("background", formData.background);   
 
         axios
             .post("http://localhost:3001/api/movies/add", formPayload, {
@@ -85,15 +93,35 @@ function AddMovie(){
                     />
                 </div>
                 <div className="form-group">
-                    <label>Thể loại:</label>
-                    <input
-                        type="text"
-                        id="genre"
-                        name="genre"
-                        value={formData.genre}
-                        onChange={handleInputChange}
-                        required
-                    />
+                <label>Thể loại:</label>
+                <div className="genre-tag-wrapper">
+                    <div
+                    className="genre-tag-input"
+                    onClick={() => setShowTags(!showTags)}
+                    >
+                    {selectedGenres.length > 0 ? selectedGenres.join(', ') : "Chọn thể loại"}
+                    </div>
+
+                    {showTags && (
+                    <div className="genre-tags-popup">
+                        {categories.map((cat) => (
+                        <div
+                            key={cat.category_id}
+                            className={`genre-tag ${selectedGenres.includes(cat.category_name) ? 'selected' : ''}`}
+                            onClick={() => {
+                            if (selectedGenres.includes(cat.category_name)) {
+                                setSelectedGenres(selectedGenres.filter(name => name !== cat.category_name));
+                            } else {
+                                setSelectedGenres([...selectedGenres, cat.category_name]);
+                            }
+                            }}
+                        >
+                            {cat.category_name}
+                        </div>
+                        ))}
+                    </div>
+                    )}
+                </div>
                 </div>
                 <div className="form-group">
                     <label>Năm phát hành:</label>

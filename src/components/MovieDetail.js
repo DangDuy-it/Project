@@ -15,6 +15,7 @@ const MovieDetail = () => {
     const [rating, setRating] = useState(10);
     const navigate = useNavigate();
 
+    
     const handleTokenError = (err) => {
         if (err.response && err.response.status === 403 && err.response.data?.error === 'Token không hợp lệ hoặc đã hết hạn') {
             toast.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
@@ -134,6 +135,7 @@ const MovieDetail = () => {
         }
     };
 
+
     if (loading) return <div className="loading-indicator">Đang tải...</div>;
     if (!movie) return <div className="error-message">Không tìm thấy phim!</div>;
 
@@ -178,7 +180,8 @@ const MovieDetail = () => {
                         <p className="movie-description">{movie.description}</p>
                         <div className="movie-details-list">
                             <p><strong>Thời lượng:</strong> {movie.duration}</p>
-                            <p><strong>Thể loại:</strong> {movie.genre}</p>
+                            <p><strong>Thể loại:</strong> {movie.genres}</p>
+                            <p><strong>Lượt xem:</strong> {movie.view_count}</p>
                             <p><strong>Đánh giá:</strong><span> {movie.avg_rating}</span>/10 từ ({movie.total_reviews} đánh giá) </p>
                         </div>
                     </div>
@@ -246,12 +249,11 @@ const MovieDetail = () => {
                     {reviews.length > 0 ? (
                         reviews.map((review) => (
                             <div key={review.review_id} className="review">
-                                <p>
-                                    <strong>{review.user_name}</strong> (
-                                    {new Date(review.review_date).toLocaleString()}) -
-                                    <span className="rating"> Điểm: {review.rating}/10</span>
-                                </p>
-                                <p>{review.comment}</p>
+                                    <img src={"/images/daupha.jpg"} alt="" />
+                                <ul> 
+                                    <li><strong>{review.user_name}</strong> ({new Date(review.review_date).toLocaleString()}) -{" "}<span className="rating">Điểm: {review.rating}/10</span></li>
+                                    <p>{review.comment}</p>
+                                </ul>
                             </div>
                         ))
                     ) : (

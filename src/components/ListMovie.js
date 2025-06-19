@@ -40,7 +40,7 @@ function AdminList() {
                         movie_id={item.movie_id}
                         title={item.title}
                         image_url={item.image_url}
-                        genre={item.genre}
+                        genre={item.genres}
                         year={item.year}
                         duration={item.duration}
                         episodes={item.episodes}

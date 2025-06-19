@@ -20,6 +20,7 @@ import WatchHistoryList from "./pages/User/WatchHistoryList";
 import ListSearchUser from "./pages/Admin/ListSearchUser";
 import ListSearchMovie from "./pages/Admin/ListSearchMovie";
 import EpisodesContent from './pages/Admin/EpisodesContent';
+import ManageCategory from "./pages/Admin/ManageCategory";
 import Forgot from "./pages/User/Forgot";
 
 export default function Layout() {
@@ -46,6 +47,7 @@ export default function Layout() {
           <Route path="/profile" element={<Profile />}/>
           <Route path="/manageuser" element={<ManageUser />} />
           <Route path="/managemovie" element={<ManageMovie />} />
+          <Route path="/managecategory" element={<ManageCategory/>}/>
           <Route path="/admin/user/:userId" element={<UserInfor />} />
           <Route path="/admin/edit/:movieId" element={<EditMovie />} />
           <Route path="/admin/search-users" element={<ListSearchUser />} />

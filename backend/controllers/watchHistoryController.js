@@ -4,9 +4,18 @@ const db = require('../config/db');
 const getWatchHistory = (req, res) => {
     const userId = req.user.user_id;
     const sql = `
-        SELECT m.movie_id, m.title, m.description, m.image_url, wh.watched_at
+        SELECT 
+            m.movie_id,
+            m.title AS movie_title,
+            m.description,
+            m.image_url,
+            wh.watched_at,
+            e.episode_id,
+            e.episode_number,
+            e.title AS episode_title
         FROM watchhistory wh
         JOIN movies m ON wh.movie_id = m.movie_id
+        JOIN episodes e ON wh.episode_id = e.episode_id
         WHERE wh.user_id = ?
         ORDER BY wh.watched_at DESC
     `;
@@ -22,10 +31,10 @@ const getWatchHistory = (req, res) => {
 // API: Thêm lịch sử xem phim
 const addWatchHistory = (req, res) => {
     const userId = req.user.user_id;
-    const { movie_id } = req.body;
+    const { movie_id, episode_id } = req.body;
 
-    if (!movie_id) {
-        return res.status(400).json({ message: "Thiếu movie_id" });
+    if (!movie_id || !episode_id) {
+        return res.status(400).json({ message: "Thiếu movie_id hoặc episode_id" });
     }
 
     db.beginTransaction((err) => {
@@ -43,8 +52,8 @@ const addWatchHistory = (req, res) => {
                 });
             }
 
-            const insertSql = `INSERT INTO watchhistory (user_id, movie_id, watched_at) VALUES (?, ?, NOW())`;
-            db.query(insertSql, [userId, movie_id], (err, insertResult) => {
+            const insertSql = `INSERT INTO watchhistory (user_id, movie_id, episode_id, watched_at) VALUES (?, ?, ?, NOW())`;
+            db.query(insertSql, [userId, movie_id, episode_id], (err, insertResult) => {
                 if (err) {
                     return db.rollback(() => {
                         console.error("Lỗi thêm lịch sử mới:", err.message, err.sqlMessage);
@@ -97,6 +106,8 @@ const deleteAllWatchHistory = (req, res) => {
         res.status(200).json({ message: "Đã xóa toàn bộ lịch sử xem phim" });
     });
 };
+
+
 
 module.exports = {
     getWatchHistory,

@@ -44,7 +44,7 @@ const AnimeSlider=() => {
                         <div className="slide-info">
                             <h2>{slide.title}</h2>
                             <p>{slide.description}</p>
-                            <p><strong>Thể loại:</strong>{slide.genre}</p>
+                            <p><strong>Thể loại:</strong>{slide.genres}</p>
                             <button className="watch-btn" onClick={()=> handleWatchClick(slide.movie_id)}>Xem Phim</button>
                         </div>
                         <div className="slide-background">

@@ -16,3 +16,46 @@
     margin-bottom: 20px;
     font-weight: bold;
 }
+.genre-tag-wrapper {
+  position: relative;
+}
+
+.genre-tag-input {
+  background-color: #333;
+  padding: 10px;
+  border-radius: 6px;
+  color: #fff;
+  border: 1px solid #555;
+  cursor: pointer;
+  min-height: 40px;
+  text-align: left;
+}
+
+.genre-tags-popup {
+  position: absolute;
+  top: 105%;
+  left: 0;
+  background-color: #222;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  z-index: 10;
+}
+
+.genre-tag {
+  padding: 8px 12px;
+  background-color: #444;
+  border-radius: 20px;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+}
+
+.genre-tag.selected {
+  background-color: #007bff;
+  color: white;
+}
+

@@ -1,0 +1,111 @@
+.add-category-container {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 800px;
+  margin: 30px auto;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+}
+
+.add-category-container h2,
+.add-category-container h3 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 25px;
+  color: #ffffff;
+}
+
+.add-category-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  background: #2a2a2a;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #444;
+  margin-bottom: 30px;
+}
+
+.add-category-form input {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  width: 60%;
+  background-color: #333;
+  color: #fff;
+}
+
+.add-category-form input::placeholder {
+  color: #bbb;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.submit-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+.cancel-button {
+  background-color: #6c757d;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.cancel-button:hover {
+  background-color: #5a6268;
+}
+
+.category-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 15px;
+  background-color: #2a2a2a;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #444;
+}
+
+.input-edit {
+  flex: 1;
+  padding: 8px 12px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+}
+
+.button-container-inline {
+  display: flex;
+  gap: 10px;
+}
+
+span1 {
+  flex: 1;
+  font-size: 16px;
+  color: #eee;
+  word-break: break-word;
+}
